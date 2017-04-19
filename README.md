@@ -1,56 +1,11 @@
-# express-http-proxy [![NPM version](https://badge.fury.io/js/express-http-proxy.svg)](http://badge.fury.io/js/express-http-proxy) [![Build Status](https://travis-ci.org/villadora/express-http-proxy.svg?branch=master)](https://travis-ci.org/villadora/express-http-proxy) [![Dependency Status](https://gemnasium.com/villadora/express-http-proxy.svg)](https://gemnasium.com/villadora/express-http-proxy)
+# koa-http-proxy [![Build Status](https://travis-ci.org/nsimmons/koa-http-proxy.svg?branch=master)](https://travis-ci.org/nsimmons/koa-http-proxy)
 
-Express middleware to proxy request to another host and pass response back
+Koa middleware to proxy request to another host and pass response back. Based on [express-http-proxy](https://github.com/villadora/express-http-proxy).
 
-## NOTE: Breaking changes for version 1.0.0
-## NOTE: Interface for 1.0.0 is still iterating on master. 
-
-1.
-```decorateRequest``` has been REMOVED, and will generate an error when called.  See ```proxyReqOptDecorator``` and ```decorateProxyReqBody```.
-
-Resolution:  Most authors will simply need to change the method name for their
-decorateRequest method;  if author was decorating reqOpts and reqBody in the
-same method, this will need to be split up.
-
-
-2.
-```intercept``` has been REMOVED, and will generate an error when called.  See ```userResDecorator```.
-
-Resolution:  Most authors will simply need to change the method name from ```intercept``` to ```userResDecorator```, and exit the method by returning the value, rather than passing it to a callback.   E.g.:
-
-Before:
-
-```js
-app.use('/proxy', proxy('www.google.com', {
-  intercept: function(proxyRes, proxyResData, userReq, userRes, cb) {
-    data = JSON.parse(proxyResData.toString('utf8'));
-    data.newProperty = 'exciting data';
-    cb(null,  JSON.stringify(data));
-  }
-}));
-```
-
-Now:
-
-```js
-app.use('/proxy', proxy('www.google.com', {
-  userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
-    data = JSON.parse(proxyResData.toString('utf8'));
-    data.newProperty = 'exciting data';
-    return JSON.stringify(data);
-  }
-}));
-```
-
-3.
-```forwardPath``` and ```forwardPathAsync``` have been DEPRECATED and will generate a warning when called.  See ```proxyReqPathResolver```.
-
-Resolution:  Simple update the name of either ```forwardPath``` or ```forwardPathAsync``` to ```proxyReqPathResolver```.
-
-## Install
+<!--## Install
 
 ```bash
-$ npm install express-http-proxy --save
+$ npm install koa-http-proxy --save
 ```
 
 ## Usage
@@ -296,7 +251,7 @@ The ```parseReqBody``` option allows you to control parsing the request body.
 For example, disabling body parsing is useful for large uploads where it would be inefficient
 to hold the data in memory.
 
-This defaults to true in order to preserve legacy behavior. 
+This defaults to true in order to preserve legacy behavior.
 
 When false, no action will be taken on the body and accordingly ```req.body``` will no longer be set.
 
@@ -347,56 +302,12 @@ app.use('/post', proxy('httpbin.org', {
 
 #### timeout
 
-By default, node does not express a timeout on connections.   
-Use timeout option to impose a specific timeout.    
+By default, node does not express a timeout on connections.
+Use timeout option to impose a specific timeout.
 Timed-out requests will respond with 504 status code and a X-Timeout-Reason header.
 
 ```js
 app.use('/', proxy('httpbin.org', {
   timeout: 2000  // in milliseconds, two seconds
 }));
-```
-
-## Questions
-
-### Q: Does it support https proxy?
-
-The library will automatically use https if the provided path has 'https://' or ':443'.  You may also set option ```https``` to true to alwyas use https.
-
-You can use ```proxyReqOptDecorator``` to ammend any auth or challenge headers required to succeed https.
-
-### Q: How can I support non-standard certificate chains?
-
-You can use the ability to decorate the proxy request prior to sending.    See ```proxyReqOptDecorators``` for more details.
-
-```js
-app.use('/', proxy('internalhost.example.com', {
-  proxyReqOptDecorators: function(proxyReqOpts, originalReq) {
-    proxyReqOpts.ca =  [caCert, intermediaryCert]
-    return proxyReqOpts;
-  }
-})
-```
-
-
-
-## Release Notes
-
-| Release | Notes |
-| --- | --- |
-| 1.0.0 (not yet published)  | Major revision.  REMOVE decorateRequest, ADD proxyReqOptDecorator and decorateProxyReqBody. <br />  REMOVE intercept, ADD userResDecorator <br />  userResDecorator supports a Promise form for async operations.  <br /> |
-| 0.11.0 | Allow author to prevent host from being memoized between requests.   General program cleanup. |
-| 0.10.1| Fixed issue where 'body encoding' was being incorrectly set to the character encoding. <br />  Dropped explicit support for node 0.10. <br />   Intercept can now deal with gziped responses. <br />   Author can now 'force https', even if the original request is over http. <br />  Do not call next after ECONNRESET catch. |
-| 0.10.0 | Fix regression in forwardPath implementation. |
-| 0.9.1 | Documentation updates.  Set 'Accept-Encoding' header to match bodyEncoding. |
-| 0.9.0 | Better handling for request body when body is JSON. |
-| 0.8.0 | Features:  add forwardPathAsync option <br />Updates:  modernize dependencies <br />Fixes: Exceptions parsing proxied response causes error: Can't set headers after they are sent. (#111) <br />If client request aborts, proxied request is aborted too (#107) |
-| 0.7.4 | Move jscs to devDependencies to avoid conflict with nsp. |
-| 0.7.3 | Adds a timeout option.   Code organization and small bug fixes. |
-| 0.7.2 | Collecting many minor documentation and test improvements. |
-| 0.4.0 | Signature of `intercept` callback changed from `function(data, req, res, callback)` to `function(rsp, data, req, res, callback)` where `rsp` is the original response from the target |
-
-## Licence
-
-MIT
-<!-- do not want to make nodeinit to complicated, you can edit this whenever you want. -->
+```-->

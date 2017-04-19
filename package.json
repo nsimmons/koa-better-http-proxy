@@ -1,7 +1,7 @@
 {
-  "name": "express-http-proxy",
-  "version": "0.11.0",
-  "description": "http proxy middleware for express",
+  "name": "koa-http-proxy",
+  "version": "0.1.0",
+  "description": "http proxy middleware for koa",
   "engines": {
     "node": ">=4.0.0"
   },
@@ -16,18 +16,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/villadora/express-http-proxy.git"
+    "url": "git://github.com/nsimmons/koa-http-proxy.git"
   },
   "keywords": [
-    "express-http-proxy"
+    "koa-http-proxy"
   ],
   "author": {
-    "name": "villadora",
-    "email": "jky239@gmail.com"
+    "name": "nsimmons",
+    "email": "nick.simmons.514@gmail.com"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/villadora/express-http-proxy/issues"
+    "url": "https://github.com/nsimmons/koa-http-proxy/issues"
   },
   "devDependencies": {
     "body-parser": "^1.17.1",
@@ -44,29 +44,5 @@
     "raw-body": "^2.2.0",
     "winston": "^2.3.1"
   },
-  "contributors": [
-    {
-      "name": "Liam Bennett"
-    },
-    {
-      "name": "eldereal",
-      "url": "https://github.com/eldereal"
-    },
-    {
-      "name": "Saulius Menkevičius",
-      "url": "https://github.com/razzmatazz"
-    },
-    {
-      "name": "Jérémy Lal",
-      "email": "kapouer@melix.org"
-    },
-    {
-      "name": "Wei Gao",
-      "email": "jky239@gmail.com"
-    },
-    {
-      "name": "Nik Krimm",
-      "url": "https://github.com/monkpow"
-    }
-  ]
+  "contributors": []
 }
