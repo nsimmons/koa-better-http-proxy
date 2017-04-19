@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "http proxy middleware for koa",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "engineStrict": true,
   "main": "index.js",
@@ -36,6 +36,7 @@
     "express": "^4.15.2",
     "jscs": "^3.0.7",
     "jshint": "^2.9.4",
+    "koa": "^2.2.0",
     "mocha": "^2.1.0",
     "supertest": "^1.2.0"
   },
