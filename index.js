@@ -29,7 +29,7 @@ var resolveProxyReqPath          = require('./app/steps/resolveProxyReqPath');
 var sendProxyRequest             = require('./app/steps/sendProxyRequest');
 var sendUserRes                  = require('./app/steps/sendUserRes');
 
-module.exports = function proxy(host, userOptions) {
+function proxy(host, userOptions) {
   assert(host, 'Host should not be empty');
 
   return function handleProxy(req, res, next) {
@@ -50,5 +50,26 @@ module.exports = function proxy(host, userOptions) {
       .then(decorateUserRes)
       .then(sendUserRes)
       .catch(next);
+  };
+};
+
+module.exports = function koaProxy(host, userOptions) {
+  const middleware = proxy(host, userOptions);
+
+  const middlewarePromise = (req, res) => {
+    return new Promise((resolve, reject) => {
+      middleware(req, res, function(err) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve();
+      });
+    });
+  };
+
+  return (ctx, next) => {
+    const req = ctx.req;
+    req.secure = ctx.request.secure;
+    return middlewarePromise(req, ctx.res).then(next);
   };
 };
