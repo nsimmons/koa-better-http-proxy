@@ -1,6 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('proxies headers', function() {
@@ -10,7 +10,7 @@ describe('proxies headers', function() {
   var http;
 
   beforeEach(function() {
-    http = express();
+    http = new Koa();
     http.use(proxy('http://httpbin.org', {
       headers: {
         'X-Current-president': 'taft'
@@ -19,7 +19,7 @@ describe('proxies headers', function() {
   });
 
   it('passed as options', function(done) {
-    request(http)
+    agent(http.callback())
       .get('/headers')
       .expect(200)
       .end(function(err, res) {
@@ -30,7 +30,7 @@ describe('proxies headers', function() {
   });
 
   it('passed as on request', function(done) {
-    request(http)
+    agent(http.callback())
       .get('/headers')
       .set('X-Powerererer', 'XTYORG')
       .expect(200)

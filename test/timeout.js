@@ -1,5 +1,5 @@
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 var proxyTarget = require('./support/proxyTarget');
 
@@ -8,7 +8,7 @@ describe('honors timeout option', function() {
 
   var other, http;
   beforeEach(function() {
-    http = express();
+    http = new Koa();
     other = proxyTarget(8080, 1000, [{
       method: 'get',
       path: '/',
@@ -21,14 +21,14 @@ describe('honors timeout option', function() {
   });
 
   function assertSuccess(server, done) {
-    request(http)
+    agent(app.callback())
       .get('/')
       .expect(200)
       .end(done);
   }
 
   function assertConnectionTimeout(server, done) {
-    request(http)
+    agent(app.callback())
       .get('/')
       .expect(408)
       .expect('X-Timout-Reason', 'express-http-proxy timed out your request after 100 ms.')

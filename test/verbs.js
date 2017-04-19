@@ -1,6 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('http verbs', function() {
@@ -10,23 +10,23 @@ describe('http verbs', function() {
   var app;
 
   beforeEach(function() {
-    app = express();
+    app = new Koa();
     app.use(proxy('httpbin.org'));
   });
 
   it('test proxy get', function(done) {
-    request(app)
+    agent(app.callback())
       .get('/get')
       .end(function(err, res) {
         if (err) { return done(err); }
-        assert(/node-superagent/.test(res.body.headers['User-Agent']));
+        assert(/node-superagent/.test(res.headers['User-Agent']));
         assert.equal(res.body.url, 'http://httpbin.org/get');
         done(err);
       });
   });
 
   it('test proxy post', function(done) {
-    request(app)
+    agent(app.callback())
       .post('/post')
       .send({
         mypost: 'hello'
@@ -38,7 +38,7 @@ describe('http verbs', function() {
   });
 
   it('test proxy put', function(done) {
-    request(app)
+    agent(app.callback())
       .put('/put')
       .send({
         mypost: 'hello'
@@ -50,7 +50,7 @@ describe('http verbs', function() {
   });
 
   it('test proxy patch', function(done) {
-    request(app)
+    agent(app.callback())
       .patch('/patch')
       .send({
         mypost: 'hello'
@@ -62,7 +62,7 @@ describe('http verbs', function() {
   });
 
   it('test proxy delete', function(done) {
-    request(app)
+    agent(app.callback())
       .del('/delete')
       .send({
         mypost: 'hello'

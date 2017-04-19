@@ -1,8 +1,8 @@
 'use strict';
 
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 var proxyTarget = require('../test/support/proxyTarget');
@@ -25,7 +25,7 @@ describe('proxies cookie', function() {
 
   beforeEach(function() {
     proxyServer = proxyTarget(12346, 100, proxyRouteFn);
-    app = express();
+    app = new Koa();
     app.use(proxy('localhost:12346'));
   });
 
@@ -34,7 +34,7 @@ describe('proxies cookie', function() {
   });
 
   it('set cookie', function(done) {
-    request(app)
+    agent(app.callback())
       .get('/cookieTest')
       .set('Cookie', 'myApp-token=12345667')
       .end(function(err, res) {

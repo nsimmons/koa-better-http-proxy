@@ -1,6 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var fs = require('fs');
 var os = require('os');
 var proxy = require('../');
@@ -23,8 +23,8 @@ describe('body encoding', function() {
   var pngData = new Buffer(pngHex, 'hex');
 
   it('allow raw data', function(done) {
-    var filename = os.tmpdir() + '/express-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
-    var app = express();
+    var filename = os.tmpdir() + '/koa-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
+    var app = new Koa();
 
     app.use(proxy('localhost:8109', {
       reqBodyEncoding: null,
@@ -37,7 +37,7 @@ describe('body encoding', function() {
 
     fs.writeFile(filename, pngData, function(err) {
       if (err) { throw err; }
-      request(app)
+      agent(app.callback())
         .post('/post')
         .attach('image', filename)
         .end(function(err) {
@@ -56,8 +56,8 @@ describe('body encoding', function() {
 
   describe('when user sets parseReqBody', function() {
     it('should not parse body', function(done) {
-      var filename = os.tmpdir() + '/express-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
-      var app = express();
+      var filename = os.tmpdir() + '/koa-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
+      var app = new Koa();
       app.use(proxy('localhost:8109', {
         parseReqBody: false,
         proxyReqBodyDecorator: function(bodyContent) {
@@ -68,7 +68,7 @@ describe('body encoding', function() {
 
       fs.writeFile(filename, pngData, function(err) {
         if (err) { throw err; }
-        request(app)
+        agent(app.callback())
           .post('/post')
           .attach('image', filename)
           .end(function(err) {
@@ -84,15 +84,15 @@ describe('body encoding', function() {
       });
     });
     it('should not fail on large limit', function(done) {
-      var filename = os.tmpdir() + '/express-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
-      var app = express();
+      var filename = os.tmpdir() + '/koa-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
+      var app = new Koa();
       app.use(proxy('localhost:8109', {
         parseReqBody: false,
         limit: '20gb',
       }));
       fs.writeFile(filename, pngData, function(err) {
         if (err) { throw err; }
-        request(app)
+        agent(app.callback())
           .post('/post')
           .attach('image', filename)
           .end(function(err) {
@@ -113,15 +113,15 @@ describe('body encoding', function() {
 
   describe('when user sets reqBodyEncoding', function() {
     it('should set the accepts-charset header', function(done) {
-      var app = express();
+      var app = new Koa();
       app.use(proxy('httpbin.org', {
         reqBodyEncoding: 'utf-16'
       }));
-      request(app)
+      agent(app.callback())
         .get('/headers')
         .end(function(err, res) {
           if (err) { throw err; }
-          assert.equal(res.body.headers['Accept-Charset'], 'utf-16');
+          assert.equal(res.headers['Accept-Charset'], 'utf-16');
           done(err);
         });
     });

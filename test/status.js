@@ -1,12 +1,12 @@
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 var mockEndpoint = require('../lib/mockHTTP.js');
 
 describe('proxies status code', function() {
   'use strict';
 
-  var proxyServer = express();
+  var proxyServer = new Koa();
   var port = 21239;
   var proxiedEndpoint = 'http://localhost:' + port;
   var server;
@@ -23,7 +23,7 @@ describe('proxies status code', function() {
 
   [304, 404, 200, 401, 500].forEach(function(status) {
     it('on ' + status, function(done) {
-      request(proxyServer)
+      agent(proxyServer.callback())
         .get('/status/' + status)
         .expect(status, done);
     });

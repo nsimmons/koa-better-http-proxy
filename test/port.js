@@ -1,14 +1,15 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 function proxyTarget(port) {
   'use strict';
 
-  var other = express();
-  other.get('/', function(req, res) {
-    res.send('Success');
+  var other = new Koa();
+  other.use((ctx) => {
+    ctx.status = 200;
+    ctx.body = "Success";
   });
   return other.listen(port);
 }
@@ -18,7 +19,7 @@ describe('proxies to requested port', function() {
 
   var other, http;
   beforeEach(function() {
-    http = express();
+    http = new Koa();
     other = proxyTarget(8080);
   });
 
@@ -28,7 +29,7 @@ describe('proxies to requested port', function() {
 
 
   function assertSuccess(server, done) {
-    request(http)
+    agent(http.callback())
       .get('/')
       .expect(200)
       .end(function(err, res) {
