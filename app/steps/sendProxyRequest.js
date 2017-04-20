@@ -36,6 +36,7 @@ function sendProxyRequest(Container) {
         ctx.set('X-Timout-Reason', 'koa-http-proxy timed out your request after ' + options.timeout + 'ms.');
         ctx.set('Content-Type', 'text/plain');
         ctx.status = 504;
+        resolve(Container);
       } else {
         reject(err);
       }

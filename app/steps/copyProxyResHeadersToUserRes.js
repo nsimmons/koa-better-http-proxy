@@ -5,7 +5,7 @@ function copyProxyResHeadersToUserRes(container) {
     var ctx = container.user.ctx;
     var rsp = container.proxy.res;
 
-    if (!ctx.headerSent) {
+    if (!ctx.headerSent && ctx.status !== 504) {
       ctx.status = rsp.statusCode;
       Object.keys(rsp.headers)
       .filter(function(item) { return item !== 'transfer-encoding'; })

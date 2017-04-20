@@ -22,7 +22,7 @@ module.exports = function proxy(host, userOptions) {
     // Skip proxy if filter is falsey.  Loose equality so filters can return
     // false, null, undefined, etc.
     if (!container.options.filter(ctx)) {
-      return Promise.resolve(null);
+      return Promise.resolve(null).then(next);
     }
 
     return buildProxyReq(container)

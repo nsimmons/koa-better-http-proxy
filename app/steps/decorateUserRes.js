@@ -33,8 +33,10 @@ function updateHeaders(ctx, rspdBefore, rspdAfter, reject) {
 }
 
 function decorateProxyResBody(container) {
+  if (container.user.ctx.status === 504) {
+    return Promise.resolve(container);
+  }
   var resolverFn = container.options.userResDecorator;
-
   if (!resolverFn) {
     return Promise.resolve(container);
   }

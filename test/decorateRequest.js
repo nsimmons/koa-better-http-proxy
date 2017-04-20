@@ -15,9 +15,8 @@ describe('decorateRequest', function() {
       it('should mutate the proxied request', function(done) {
         var app = new Koa();
         app.use(proxy('httpbin.org', {
-          proxyReqOptDecorator: function(reqOpt, req) {
+          proxyReqOptDecorator: function(reqOpt, ctx) {
             reqOpt.headers['user-agent'] = 'test user agent';
-            assert(req instanceof http.IncomingMessage);
             return reqOpt;
           }
         }));
@@ -36,8 +35,7 @@ describe('decorateRequest', function() {
       it('should mutate the proxied request', function(done) {
         var app = new Koa();
         app.use(proxy('httpbin.org', {
-          proxyReqOptDecorator: function(reqOpt, req) {
-            assert(req instanceof http.IncomingMessage);
+          proxyReqOptDecorator: function(reqOpt, ctx) {
             return new Promise(function(resolve) {
               reqOpt.headers['user-agent'] = 'test user agent';
               resolve(reqOpt);
@@ -60,9 +58,8 @@ describe('decorateRequest', function() {
     it('should have access to ip', function(done) {
       var app = new Koa();
       app.use(proxy('httpbin.org', {
-        proxyReqOptDecorator: function(reqOpts, req) {
-          assert(req instanceof http.IncomingMessage);
-          assert(req.ip);
+        proxyReqOptDecorator: function(reqOpts, ctx) {
+          assert(ctx.ip);
           return reqOpts;
         }
       }));

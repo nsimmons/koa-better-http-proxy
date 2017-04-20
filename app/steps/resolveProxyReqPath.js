@@ -3,7 +3,7 @@
 var url = require('url');
 
 function defaultProxyReqPathResolver(ctx) {
-  return url.parse(ctx.originalUrl).path;
+  return url.parse(ctx.url).path;
 }
 
 function resolveProxyReqPath(container) {

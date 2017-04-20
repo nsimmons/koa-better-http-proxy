@@ -19,8 +19,8 @@ describe('proxies https', function() {
       .get('/get?show_env=1')
       .end(function(err, res) {
         if (err) { return done(err); }
-        assert(res.headers['x-forwarded-port'] === '443', 'Expects forwarded 443 Port');
-        assert(res.body.headers['x-forwarded-proto'] === 'https', 'Expects forwarded protocol to be https');
+        assert(res.body.headers['X-Forwarded-Port'] === '443', 'Expects forwarded 443 Port');
+        assert(res.body.headers['X-Forwarded-Proto'] === 'https', 'Expects forwarded protocol to be https');
         done();
       });
   }

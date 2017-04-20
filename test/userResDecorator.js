@@ -70,9 +70,9 @@ describe('userResDecorator', function() {
   it('can modify the response headers, [deviant case, supported by pass-by-reference atm]', function(done) {
     var app = new Koa();
     app.use(proxy('httpbin.org', {
-      userResDecorator: function(rsp, data, req, res) {
-        res.set('x-wombat-alliance', 'mammels');
-        res.set('content-type', 'wiki/wiki');
+      userResDecorator: function(rsp, data, ctx) {
+        ctx.set('x-wombat-alliance', 'mammels');
+        ctx.set('content-type', 'wiki/wiki');
         return data;
       }
     }));
@@ -125,14 +125,14 @@ describe('userResDecorator', function() {
     var preferredPort = 3000;
 
     proxyApp.use(proxy(redirectingServerOrigin, {
-      userResDecorator: function(rsp, data, req, res) {
-        var proxyReturnedLocation = res._headers.location;
-        res.location(proxyReturnedLocation.replace(redirectingServerPort, preferredPort));
+      userResDecorator: function(rsp, data, ctx) {
+        var proxyReturnedLocation = ctx.response.headers.location;
+        ctx.set('location', proxyReturnedLocation.replace(redirectingServerPort, preferredPort));
         return data;
       }
     }));
 
-    request(proxyApp)
+    agent(proxyApp.callback())
     .get('/')
     .expect(function(res) {
       res.headers.location.match(/localhost:3000/);

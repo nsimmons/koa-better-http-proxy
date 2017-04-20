@@ -46,12 +46,12 @@ describe('resolveProxyReqPath', function() {
 
       it('the ' + alias + ' method has access to request object', function(done) {
         var app = new Koa();
-        app.use(proxy('localhost:12345', {
-          forwardPath: function(req) {
-            assert.ok(req instanceof http.IncomingMessage);
-            return '/working';
-          }
-        }));
+        var opts = {};
+        opts[alias] = function(ctx) {
+          assert.ok(ctx.req instanceof http.IncomingMessage);
+          return '/working';
+        };
+        app.use(proxy('localhost:12345', opts));
 
         agent(app.callback())
           .get('/foobar')

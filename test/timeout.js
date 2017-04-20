@@ -21,18 +21,22 @@ describe('honors timeout option', function() {
   });
 
   function assertSuccess(server, done) {
-    agent(app.callback())
+    agent(http.callback())
       .get('/')
       .expect(200)
-      .end(done);
+      .end(function(err, res) {
+        if (err) return done(err);
+        done();
+      });
   }
 
   function assertConnectionTimeout(server, done) {
-    agent(app.callback())
+    agent(http.callback())
       .get('/')
-      .expect(408)
-      .expect('X-Timout-Reason', 'express-http-proxy timed out your request after 100 ms.')
-      .end(function() {
+      .expect(504)
+      .expect('X-Timout-Reason', 'koa-http-proxy timed out your request after 100ms.')
+      .end(function(err, res) {
+        if (err) return done(err);
         done();
       });
   }

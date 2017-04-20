@@ -55,6 +55,7 @@ describe('body encoding', function() {
   });
 
   describe('when user sets parseReqBody', function() {
+
     it('should not parse body', function(done) {
       var filename = os.tmpdir() + '/koa-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
       var app = new Koa();
@@ -83,6 +84,7 @@ describe('body encoding', function() {
           });
       });
     });
+
     it('should not fail on large limit', function(done) {
       var filename = os.tmpdir() + '/koa-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
       var app = new Koa();
@@ -110,8 +112,8 @@ describe('body encoding', function() {
     });
   });
 
-
   describe('when user sets reqBodyEncoding', function() {
+
     it('should set the accepts-charset header', function(done) {
       var app = new Koa();
       app.use(proxy('httpbin.org', {
@@ -121,11 +123,11 @@ describe('body encoding', function() {
         .get('/headers')
         .end(function(err, res) {
           if (err) { throw err; }
-          assert.equal(res.headers['accept-charset'], 'utf-16');
+          assert.equal(res.body.headers['Accept-Charset'], 'utf-16');
           done(err);
         });
     });
-  });
 
+  });
 
 });

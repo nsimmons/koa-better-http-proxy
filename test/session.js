@@ -8,24 +8,17 @@ describe('preserveReqSession', function() {
 
   this.timeout(10000);
 
-  var app;
-
-  beforeEach(function() {
-    app = new Koa();
-    app.use(proxy('httpbin.org'));
-  });
-
   it('preserveReqSession', function(done) {
     var app = new Koa();
-    app.use(function(req, res, next) {
-      req.session = 'hola';
-      next();
+    app.use(function(ctx, next) {
+      ctx.session = 'hola';
+      return Promise.resolve(null).then(next);
     });
     app.use(proxy('httpbin.org', {
       preserveReqSession: true,
-      proxyReqOptDecorator: function(reqOpts, req) {
+      proxyReqOptDecorator: function(reqOpts, ctx) {
         assert(reqOpts.session, 'hola');
-        return req;
+        return ctx;
       }
     }));
 

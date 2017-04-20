@@ -51,7 +51,7 @@ describe('resolveProxyReqPath', function() {
         describe('it returns a promise which resolves a container with expected url', function() {
           test.data.forEach(function(data) {
             it(data.url, function(done) {
-              container.user.req = { url: data.url };
+              container.user.ctx = { url: data.url };
               container.options.proxyReqPathResolver = test.resolverFn;
               var r = resolveProxyReqPath(container);
 

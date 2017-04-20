@@ -1,45 +1,45 @@
-// var express = require('express');
-// var request = require('supertest');
-// var proxy = require('../');
+var Koa = require('koa');
+var agent = require('supertest').agent;
+var proxy = require('../');
 
-// describe('host can be a dynamic function', function() {
-//   'use strict';
+describe('host can be a dynamic function', function() {
+  'use strict';
 
-//   this.timeout(10000);
+  this.timeout(10000);
 
-//   var app = express();
-//   var firstProxyApp = express();
-//   var secondProxyApp = express();
-//   var firstPort = 10001;
-//   var secondPort = 10002;
+  var app = new Koa();
+  var firstProxyApp = new Koa();
+  var secondProxyApp = new Koa();
+  var firstPort = 10001;
+  var secondPort = 10002;
 
-//   app.use('/proxy/:port', proxy(function(req) {
-//     return 'localhost:' + req.params.port;
-//   }, {
-//     memoizeHost: false
-//   }));
+  app.use(proxy((ctx) => {
+    return 'localhost:' + ctx.url.replace('/proxy/', '');
+  }, {
+    memoizeHost: false
+  }));
 
-//   firstProxyApp.use('/', function(req, res) {
-//     res.sendStatus(204);
-//   });
-//   firstProxyApp.listen(firstPort);
+  firstProxyApp.use((ctx) => {
+    ctx.status = 204;
+  });
+  firstProxyApp.listen(firstPort);
 
-//   secondProxyApp.use('/', function(req, res) {
-//     res.sendStatus(200);
-//   });
-//   secondProxyApp.listen(secondPort);
+  secondProxyApp.use((ctx) => {
+    ctx.status = 200;
+  });
+  secondProxyApp.listen(secondPort);
 
-//   it('can proxy with session value', function(done) {
-//     request(app)
-//       .get('/proxy/' + firstPort)
-//       .expect(204)
-//       .end(function(err) {
-//         if (err) {
-//           return done(err);
-//         }
-//         request(app)
-//             .get('/proxy/' + secondPort)
-//             .expect(200, done);
-//       });
-//   });
-// });
+  it('can proxy with session value', function(done) {
+    agent(app.callback())
+      .get('/proxy/' + firstPort)
+      .expect(204)
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
+        agent(app.callback())
+          .get('/proxy/' + secondPort)
+          .expect(200, done);
+      });
+  });
+});
