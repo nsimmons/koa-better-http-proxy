@@ -89,5 +89,5 @@
     // Custom Globals
     "globals"       : {   // additional predefined global variables
       "Promise" : false
-    }       
+    }
 }

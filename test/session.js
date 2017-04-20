@@ -1,6 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('preserveReqSession', function() {
@@ -8,28 +8,21 @@ describe('preserveReqSession', function() {
 
   this.timeout(10000);
 
-  var app;
-
-  beforeEach(function() {
-    app = express();
-    app.use(proxy('httpbin.org'));
-  });
-
   it('preserveReqSession', function(done) {
-    var app = express();
-    app.use(function(req, res, next) {
-      req.session = 'hola';
-      next();
+    var app = new Koa();
+    app.use(function(ctx, next) {
+      ctx.session = 'hola';
+      return Promise.resolve(null).then(next);
     });
     app.use(proxy('httpbin.org', {
       preserveReqSession: true,
-      proxyReqOptDecorator: function(reqOpts, req) {
+      proxyReqOptDecorator: function(reqOpts, ctx) {
         assert(reqOpts.session, 'hola');
-        return req;
+        return ctx;
       }
     }));
 
-    request(app)
+    agent(app.callback())
       .get('/user-agent')
       .end(function(err) {
         if (err) { return done(err); }

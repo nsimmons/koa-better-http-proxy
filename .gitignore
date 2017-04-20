@@ -4,3 +4,6 @@ node_modules
 
 # no Webstorm info at all
 .idea/*
+
+# no VSCode info either
+.vscode/*

@@ -1,20 +1,5 @@
 'use strict';
 
-// ROADMAP: Major refactoring April 2017
-// It would be easier to follow if we extract to simpler functions, and used
-// a standard, step-wise set of filters with clearer edges and borders.  It
-// would be more useful if authors could use Promises for all over-rideable
-// steps.
-
-// complete: Break workflow into composable steps without changing them much
-// complete: extract workflow methods from main file
-// complete: cleanup options interface
-// *: change hook names to be different than the workflow steps.
-// *: cleanup host is processed twice
-// *: cleanup workflow methods so they all present as over-rideable thennables
-// *: Update/add tests to unit test workflow steps independently
-// *: update docs and release
-
 var ScopeContainer = require('./lib/scopeContainer');
 var assert = require('assert');
 
@@ -31,15 +16,16 @@ var sendUserRes                  = require('./app/steps/sendUserRes');
 
 module.exports = function proxy(host, userOptions) {
   assert(host, 'Host should not be empty');
-
-  return function handleProxy(req, res, next) {
-    var container = new ScopeContainer(req, res, next, host, userOptions);
+  return function(ctx, next) {
+    var container = new ScopeContainer(ctx, host, userOptions);
 
     // Skip proxy if filter is falsey.  Loose equality so filters can return
     // false, null, undefined, etc.
-    if (!container.options.filter(req, res)) { return next(); }
+    if (!container.options.filter(ctx)) {
+      return Promise.resolve(null).then(next);
+    }
 
-    buildProxyReq(container)
+    return buildProxyReq(container)
       .then(resolveProxyHost)
       .then(decorateProxyReqOpts)
       .then(resolveProxyReqPath)
@@ -49,6 +35,6 @@ module.exports = function proxy(host, userOptions) {
       .then(copyProxyResHeadersToUserRes)
       .then(decorateUserRes)
       .then(sendUserRes)
-      .catch(next);
+      .then(next);
   };
 };

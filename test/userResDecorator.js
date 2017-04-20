@@ -1,14 +1,14 @@
 'use strict';
 
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('userResDecorator', function() {
 
   it('has access to original response', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('httpbin.org', {
       userResDecorator: function(proxyRes, proxyResData) {
         assert(proxyRes.connection);
@@ -19,11 +19,11 @@ describe('userResDecorator', function() {
       }
     }));
 
-    request(app).get('/').end(done);
+    agent(app.callback()).get('/').end(done);
   });
 
   it('works with promises', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('httpbin.org', {
       userResDecorator: function(proxyRes, proxyResData) {
         return new Promise(function(resolve) {
@@ -35,7 +35,7 @@ describe('userResDecorator', function() {
       }
     }));
 
-    request(app)
+    agent(app.callback())
     .get('/ip')
     .end(function(err, res) {
       if (err) { return done(err); }
@@ -47,7 +47,7 @@ describe('userResDecorator', function() {
   });
 
   it('can modify the response data', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('httpbin.org', {
       userResDecorator: function(proxyRes, proxyResData) {
         proxyResData = JSON.parse(proxyResData.toString('utf8'));
@@ -56,7 +56,7 @@ describe('userResDecorator', function() {
       }
     }));
 
-    request(app)
+    agent(app.callback())
     .get('/ip')
     .end(function(err, res) {
       if (err) { return done(err); }
@@ -68,16 +68,16 @@ describe('userResDecorator', function() {
 
 
   it('can modify the response headers, [deviant case, supported by pass-by-reference atm]', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('httpbin.org', {
-      userResDecorator: function(rsp, data, req, res) {
-        res.set('x-wombat-alliance', 'mammels');
-        res.set('content-type', 'wiki/wiki');
+      userResDecorator: function(rsp, data, ctx) {
+        ctx.set('x-wombat-alliance', 'mammels');
+        ctx.set('content-type', 'wiki/wiki');
         return data;
       }
     }));
 
-    request(app)
+    agent(app.callback())
     .get('/ip')
     .end(function(err, res) {
       if (err) { return done(err); }
@@ -88,7 +88,7 @@ describe('userResDecorator', function() {
   });
 
   it('can mutuate an html response', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('httpbin.org', {
       userResDecorator: function(rsp, data) {
         data = data.toString().replace('Oh', '<strong>Hey</strong>');
@@ -97,7 +97,7 @@ describe('userResDecorator', function() {
       }
     }));
 
-    request(app)
+    agent(app.callback())
     .get('/html')
     .end(function(err, res) {
       if (err) { return done(err); }
@@ -109,11 +109,9 @@ describe('userResDecorator', function() {
   it('can change the location of a redirect', function(done) {
 
     function redirectingServer(port, origin) {
-      var app = express();
-      app.get('/', function(req, res) {
-        res.status(302);
-        res.location(origin + '/proxied/redirect/url');
-        res.send();
+      var app = new Koa();
+      app.use(function(ctx) {
+        ctx.redirect(origin + '/proxied/redirect/url');
       });
       return app.listen(port);
     }
@@ -123,18 +121,18 @@ describe('userResDecorator', function() {
 
     var server = redirectingServer(redirectingServerPort, redirectingServerOrigin);
 
-    var proxyApp = express();
+    var proxyApp = new Koa();
     var preferredPort = 3000;
 
     proxyApp.use(proxy(redirectingServerOrigin, {
-      userResDecorator: function(rsp, data, req, res) {
-        var proxyReturnedLocation = res._headers.location;
-        res.location(proxyReturnedLocation.replace(redirectingServerPort, preferredPort));
+      userResDecorator: function(rsp, data, ctx) {
+        var proxyReturnedLocation = ctx.response.headers.location;
+        ctx.set('location', proxyReturnedLocation.replace(redirectingServerPort, preferredPort));
         return data;
       }
     }));
 
-    request(proxyApp)
+    agent(proxyApp.callback())
     .get('/')
     .expect(function(res) {
       res.headers.location.match(/localhost:3000/);
@@ -158,7 +156,7 @@ describe('test userResDecorator on html response from github',function() {
 
   it('is able to read and manipulate the response', function(done) {
     this.timeout(15000);  // give it some extra time to get response
-    var app = express();
+    var app = new Koa();
     app.use(proxy('https://github.com/villadora/express-http-proxy', {
       userResDecorator: function(targetResponse, data) {
         data = data.toString().replace('DOCTYPE','WINNING');
@@ -167,7 +165,7 @@ describe('test userResDecorator on html response from github',function() {
       }
     }));
 
-    request(app)
+    agent(app.callback())
     .get('/html')
     .end(function(err, res) {
       if (err) { return done(err); }

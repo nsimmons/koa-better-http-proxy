@@ -1,9 +1,9 @@
 'use strict';
 
 var assert = require('assert');
-var express = require('express');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var http = require('http');
-var request = require('supertest');
 var proxy = require('../../');
 var proxyTarget = require('../../test/support/proxyTarget');
 
@@ -33,27 +33,27 @@ describe('resolveProxyReqPath', function() {
   aliases.forEach(function(alias) {
     describe('when author uses option ' + alias, function() {
       it('the proxy request path is the result of the function', function(done) {
-        var app = express();
+        var app = new Koa();
         var opts = {};
         opts[alias] = function() { return '/working'; };
         app.use(proxy('localhost:12345', opts));
 
-        request(app)
+        agent(app.callback())
           .get('/failing')
           .expect(200)
           .end(done);
       });
 
       it('the ' + alias + ' method has access to request object', function(done) {
-        var app = express();
-        app.use(proxy('localhost:12345', {
-          forwardPath: function(req) {
-            assert.ok(req instanceof http.IncomingMessage);
-            return '/working';
-          }
-        }));
+        var app = new Koa();
+        var opts = {};
+        opts[alias] = function(ctx) {
+          assert.ok(ctx.req instanceof http.IncomingMessage);
+          return '/working';
+        };
+        app.use(proxy('localhost:12345', opts));
 
-        request(app)
+        agent(app.callback())
           .get('/foobar')
           .expect(200)
           .end(done);

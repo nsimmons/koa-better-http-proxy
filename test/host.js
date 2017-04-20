@@ -1,5 +1,5 @@
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('host can be a dynamic function', function() {
@@ -7,39 +7,39 @@ describe('host can be a dynamic function', function() {
 
   this.timeout(10000);
 
-  var app = express();
-  var firstProxyApp = express();
-  var secondProxyApp = express();
+  var app = new Koa();
+  var firstProxyApp = new Koa();
+  var secondProxyApp = new Koa();
   var firstPort = 10001;
   var secondPort = 10002;
 
-  app.use('/proxy/:port', proxy(function(req) {
-    return 'localhost:' + req.params.port;
+  app.use(proxy(function(ctx) {
+    return 'localhost:' + ctx.url.replace('/proxy/', '');
   }, {
     memoizeHost: false
   }));
 
-  firstProxyApp.use('/', function(req, res) {
-    res.sendStatus(204);
+  firstProxyApp.use(function(ctx) {
+    ctx.status = 204;
   });
   firstProxyApp.listen(firstPort);
 
-  secondProxyApp.use('/', function(req, res) {
-    res.sendStatus(200);
+  secondProxyApp.use(function(ctx) {
+    ctx.status = 200;
   });
   secondProxyApp.listen(secondPort);
 
   it('can proxy with session value', function(done) {
-    request(app)
+    agent(app.callback())
       .get('/proxy/' + firstPort)
       .expect(204)
       .end(function(err) {
         if (err) {
           return done(err);
         }
-        request(app)
-            .get('/proxy/' + secondPort)
-            .expect(200, done);
+        agent(app.callback())
+          .get('/proxy/' + secondPort)
+          .expect(200, done);
       });
   });
 });

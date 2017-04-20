@@ -1,7 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var http = require('http');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('decorateRequest', function() {
@@ -9,27 +8,19 @@ describe('decorateRequest', function() {
 
   this.timeout(10000);
 
-  var app;
-
-  beforeEach(function() {
-    app = express();
-    app.use(proxy('httpbin.org'));
-  });
-
   describe('Supports Promise and non-Promise forms', function() {
 
     describe('when proxyReqOptDecorator is a simple function (non Promise)', function() {
       it('should mutate the proxied request', function(done) {
-        var app = express();
+        var app = new Koa();
         app.use(proxy('httpbin.org', {
-          proxyReqOptDecorator: function(reqOpt, req) {
+          proxyReqOptDecorator: function(reqOpt) {
             reqOpt.headers['user-agent'] = 'test user agent';
-            assert(req instanceof http.IncomingMessage);
             return reqOpt;
           }
         }));
 
-        request(app)
+        agent(app.callback())
         .get('/user-agent')
         .end(function(err, res) {
           if (err) { return done(err); }
@@ -41,10 +32,9 @@ describe('decorateRequest', function() {
 
     describe('when proxyReqOptDecorator is a Promise', function() {
       it('should mutate the proxied request', function(done) {
-        var app = express();
+        var app = new Koa();
         app.use(proxy('httpbin.org', {
-          proxyReqOptDecorator: function(reqOpt, req) {
-            assert(req instanceof http.IncomingMessage);
+          proxyReqOptDecorator: function(reqOpt) {
             return new Promise(function(resolve) {
               reqOpt.headers['user-agent'] = 'test user agent';
               resolve(reqOpt);
@@ -52,7 +42,7 @@ describe('decorateRequest', function() {
           }
         }));
 
-        request(app)
+        agent(app.callback())
         .get('/user-agent')
         .end(function(err, res) {
           if (err) { return done(err); }
@@ -65,16 +55,15 @@ describe('decorateRequest', function() {
 
   describe('proxyReqOptDecorator has access to the source request\'s data', function() {
     it('should have access to ip', function(done) {
-      var app = express();
+      var app = new Koa();
       app.use(proxy('httpbin.org', {
-        proxyReqOptDecorator: function(reqOpts, req) {
-          assert(req instanceof http.IncomingMessage);
-          assert(req.ip);
+        proxyReqOptDecorator: function(reqOpts, ctx) {
+          assert(ctx.ip);
           return reqOpts;
         }
       }));
 
-      request(app)
+      agent(app.callback())
       .get('/')
       .end(function(err) {
         if (err) { return done(err); }

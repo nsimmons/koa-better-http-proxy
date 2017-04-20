@@ -2,15 +2,15 @@
 
 var url = require('url');
 
-function defaultProxyReqPathResolver(req) {
-  return url.parse(req.url).path;
+function defaultProxyReqPathResolver(ctx) {
+  return url.parse(ctx.url).path;
 }
 
 function resolveProxyReqPath(container) {
   var resolverFn = container.options.proxyReqPathResolver || defaultProxyReqPathResolver;
 
   return Promise
-    .resolve(resolverFn(container.user.req))
+    .resolve(resolverFn(container.user.ctx))
     .then(function(resolvedPath) {
         container.proxy.reqBuilder.path = resolvedPath;
         return Promise.resolve(container);

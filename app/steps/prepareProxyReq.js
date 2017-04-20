@@ -27,7 +27,7 @@ function prepareProxyReq(container) {
       reqOpt.headers['content-length'] = getContentLength(bodyContent);
 
       if (container.options.reqBodyEncoding) {
-        reqOpt.headers['Accept-Charset'] = container.options.reqBodyEncoding;
+        reqOpt.headers['accept-charset'] = container.options.reqBodyEncoding;
       }
     }
 

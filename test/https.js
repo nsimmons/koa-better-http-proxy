@@ -1,6 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('proxies https', function() {
@@ -11,11 +11,11 @@ describe('proxies https', function() {
   var app;
 
   beforeEach(function() {
-    app = express();
+    app = new Koa();
   });
 
   function assertSecureRequest(app, done) {
-    request(app)
+    agent(app.callback())
       .get('/get?show_env=1')
       .end(function(err, res) {
         if (err) { return done(err); }

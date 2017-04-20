@@ -1,6 +1,6 @@
 var assert = require('assert');
-var express = require('express');
-var request = require('supertest');
+var Koa = require('koa');
+var agent = require('supertest').agent;
 var proxy = require('../');
 
 describe('url parsing', function() {
@@ -9,9 +9,9 @@ describe('url parsing', function() {
   this.timeout(10000);
 
   it('can parse a url with a port', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('http://httpbin.org:80'));
-    request(app)
+    agent(app.callback())
       .get('/')
       .end(function(err) {
         if (err) { return done(err); }
@@ -21,9 +21,9 @@ describe('url parsing', function() {
   });
 
   it('does not throw `Uncaught RangeError` if you have both a port and a trailing slash', function(done) {
-    var app = express();
+    var app = new Koa();
     app.use(proxy('http://httpbin.org:80/'));
-    request(app)
+    agent(app.callback())
       .get('/')
       .end(function(err) {
         if (err) { return done(err); }
