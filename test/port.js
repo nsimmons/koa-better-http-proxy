@@ -7,9 +7,9 @@ function proxyTarget(port) {
   'use strict';
 
   var other = new Koa();
-  other.use((ctx) => {
+  other.use(function(ctx) {
     ctx.status = 200;
-    ctx.body = "Success";
+    ctx.body = 'Success';
   });
   return other.listen(port);
 }

@@ -16,7 +16,7 @@ var sendUserRes                  = require('./app/steps/sendUserRes');
 
 module.exports = function proxy(host, userOptions) {
   assert(host, 'Host should not be empty');
-  return (ctx, next) => {
+  return function(ctx, next) {
     var container = new ScopeContainer(ctx, host, userOptions);
 
     // Skip proxy if filter is falsey.  Loose equality so filters can return

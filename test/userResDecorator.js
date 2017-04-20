@@ -110,7 +110,7 @@ describe('userResDecorator', function() {
 
     function redirectingServer(port, origin) {
       var app = new Koa();
-      app.use((ctx) => {
+      app.use(function(ctx) {
         ctx.redirect(origin + '/proxied/redirect/url');
       });
       return app.listen(port);

@@ -24,8 +24,10 @@ describe('honors timeout option', function() {
     agent(http.callback())
       .get('/')
       .expect(200)
-      .end(function(err, res) {
-        if (err) return done(err);
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
         done();
       });
   }
@@ -35,8 +37,10 @@ describe('honors timeout option', function() {
       .get('/')
       .expect(504)
       .expect('X-Timout-Reason', 'koa-http-proxy timed out your request after 100ms.')
-      .end(function(err, res) {
-        if (err) return done(err);
+      .end(function(err) {
+        if (err) {
+          return done(err);
+        }
         done();
       });
   }

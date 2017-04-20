@@ -1,7 +1,6 @@
 var assert = require('assert');
 var Koa = require('koa');
 var agent = require('supertest').agent;
-var http = require('http');
 var proxy = require('../');
 
 describe('decorateRequest', function() {
@@ -15,7 +14,7 @@ describe('decorateRequest', function() {
       it('should mutate the proxied request', function(done) {
         var app = new Koa();
         app.use(proxy('httpbin.org', {
-          proxyReqOptDecorator: function(reqOpt, ctx) {
+          proxyReqOptDecorator: function(reqOpt) {
             reqOpt.headers['user-agent'] = 'test user agent';
             return reqOpt;
           }
@@ -35,7 +34,7 @@ describe('decorateRequest', function() {
       it('should mutate the proxied request', function(done) {
         var app = new Koa();
         app.use(proxy('httpbin.org', {
-          proxyReqOptDecorator: function(reqOpt, ctx) {
+          proxyReqOptDecorator: function(reqOpt) {
             return new Promise(function(resolve) {
               reqOpt.headers['user-agent'] = 'test user agent';
               resolve(reqOpt);

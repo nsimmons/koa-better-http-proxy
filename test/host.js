@@ -13,18 +13,18 @@ describe('host can be a dynamic function', function() {
   var firstPort = 10001;
   var secondPort = 10002;
 
-  app.use(proxy((ctx) => {
+  app.use(proxy(function(ctx) {
     return 'localhost:' + ctx.url.replace('/proxy/', '');
   }, {
     memoizeHost: false
   }));
 
-  firstProxyApp.use((ctx) => {
+  firstProxyApp.use(function(ctx) {
     ctx.status = 204;
   });
   firstProxyApp.listen(firstPort);
 
-  secondProxyApp.use((ctx) => {
+  secondProxyApp.use(function(ctx) {
     ctx.status = 200;
   });
   secondProxyApp.listen(secondPort);
