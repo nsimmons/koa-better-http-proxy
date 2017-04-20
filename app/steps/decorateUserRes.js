@@ -22,9 +22,9 @@ function verifyBuffer(rspd, reject) {
   }
 }
 
-function updateHeaders(res, rspdBefore, rspdAfter, reject) {
-  if (!res.headersSent) {
-      res.set('content-length', rspdAfter.length);
+function updateHeaders(ctx, rspdBefore, rspdAfter, reject) {
+  if (!ctx.headerSent) {
+      ctx.response.header['content-length'] = rspdAfter.length;
   } else if (rspdAfter.length !== rspdBefore.length) {
       var error = '"Content-Length" is already sent,' +
           'the length of response data can not be changed';
@@ -41,16 +41,15 @@ function decorateProxyResBody(container) {
 
   var proxyResData = maybeUnzipResponse(container.proxy.resData, container.proxy.res);
   var proxyRes = container.proxy.res;
-  var req = container.user.req;
-  var res = container.user.res;
+  var ctx = container.user.ctx;
 
   return Promise
-    .resolve(resolverFn(proxyRes, proxyResData, req, res))
+    .resolve(resolverFn(proxyRes, proxyResData, ctx))
     .then(function(modifiedResData) {
       return new Promise(function(resolve, reject) {
         var rspd = as.buffer(modifiedResData, container.options);
         verifyBuffer(rspd, reject);
-        updateHeaders(res, proxyResData, rspd, reject);
+        updateHeaders(ctx, proxyResData, rspd, reject);
         container.proxy.resData = maybeZipResponse(rspd, container.proxy.res);
         resolve(container);
       });

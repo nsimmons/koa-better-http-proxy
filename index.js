@@ -32,12 +32,12 @@ var sendUserRes                  = require('./app/steps/sendUserRes');
 function proxy(host, userOptions) {
   assert(host, 'Host should not be empty');
 
-  return function handleProxy(req, res, next) {
-    var container = new ScopeContainer(req, res, next, host, userOptions);
+  return function handleProxy(ctx, next) {
+    var container = new ScopeContainer(ctx, next, host, userOptions);
 
     // Skip proxy if filter is falsey.  Loose equality so filters can return
     // false, null, undefined, etc.
-    if (!container.options.filter(req, res)) { return next(); }
+    if (!container.options.filter(ctx)) { return next(); }
 
     buildProxyReq(container)
       .then(resolveProxyHost)
@@ -56,9 +56,9 @@ function proxy(host, userOptions) {
 module.exports = function koaProxy(host, userOptions) {
   const middleware = proxy(host, userOptions);
 
-  const middlewarePromise = (req, res) => {
+  const middlewarePromise = (ctx) => {
     return new Promise((resolve, reject) => {
-      middleware(req, res, function(err) {
+      middleware(ctx, function(err) {
         if (err) {
           return reject(err);
         }
@@ -68,8 +68,6 @@ module.exports = function koaProxy(host, userOptions) {
   };
 
   return (ctx, next) => {
-    const req = ctx.req;
-    req.secure = ctx.request.secure;
-    return middlewarePromise(req, ctx.res).then(next);
+    return middlewarePromise(ctx).then(next);
   };
 };

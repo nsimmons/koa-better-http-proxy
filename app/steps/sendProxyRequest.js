@@ -3,8 +3,7 @@
 var chunkLength = require('../../lib/chunkLength');
 
 function sendProxyRequest(Container) {
-  var req = Container.user.req;
-  var res = Container.user.res;
+  var ctx = Container.user.ctx;
   var bodyContent = Container.proxy.bodyContent;
   var reqOpt = Container.proxy.reqBuilder;
   var options = Container.options;
@@ -34,11 +33,9 @@ function sendProxyRequest(Container) {
     proxyReq.on('error', function(err) {
     // reject(error);
       if (err.code === 'ECONNRESET') {
-        res.setHeader('X-Timout-Reason',
-          'express-http-proxy timed out your request after ' +
-        options.timeout + 'ms.');
-        res.writeHead(504, {'Content-Type': 'text/plain'});
-        res.end();
+        ctx.response.header['X-Timout-Reason'] = 'koa-http-proxy timed out your request after ' + options.timeout + 'ms.';
+        ctx.response.header['Content-Type'] = 'text/plain';
+        ctx.status = 504;
       } else {
         reject(err);
       }
@@ -61,10 +58,10 @@ function sendProxyRequest(Container) {
       proxyReq.end();
     } else {
     // Pipe will call end when it has completely read from the request.
-      req.pipe(proxyReq);
+      ctx.req.pipe(proxyReq);
     }
 
-    req.on('aborted', function() {
+    ctx.req.on('aborted', function() {
     // reject?
       proxyReq.abort();
     });

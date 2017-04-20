@@ -8,7 +8,7 @@ function decorateProxyReqBody(container) {
   var resolverFn = container.options.proxyReqBodyDecorator || defaultDecorator;
 
   return Promise
-    .resolve(resolverFn(container.proxy.bodyContent, container.user.req))
+    .resolve(resolverFn(container.proxy.bodyContent, container.user.ctx))
     .then(function(bodyContent) {
       container.proxy.bodyContent = bodyContent;
       return Promise.resolve(container);
