@@ -24,7 +24,7 @@ function verifyBuffer(rspd, reject) {
 
 function updateHeaders(ctx, rspdBefore, rspdAfter, reject) {
   if (!ctx.headerSent) {
-      ctx.response.header['content-length'] = rspdAfter.length;
+      ctx.set('content-length', rspdAfter.length);
   } else if (rspdAfter.length !== rspdBefore.length) {
       var error = '"Content-Length" is already sent,' +
           'the length of response data can not be changed';

@@ -173,7 +173,7 @@ module.
 app.use('/proxy', proxy('www.google.com', {
   proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
     // you can update headers
-    proxyReqOpts.headers['Content-Type'] = 'text/html';
+    proxyReqOpts.headers['content-type'] = 'text/html';
     // you can change the method
     proxyReqOpts.method = 'GET';
     // you could change the path
@@ -189,7 +189,7 @@ You can use a Promise for async style.
 app.use('/proxy', proxy('www.google.com', {
   proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
     return new Promise(function(resolve, reject) {
-      proxyReqOpts.headers['Content-Type'] = 'text/html';
+      proxyReqOpts.headers['content-type'] = 'text/html';
       resolve(proxyReqOpts);
     })
   }

@@ -24,7 +24,7 @@ describe('proxies headers', function() {
       .expect(200)
       .end(function(err, res) {
         if (err) { return done(err); }
-        assert(res.body.headers['X-Current-President'] === 'taft');
+        assert(res.body.headers['x-current-president'] === 'taft');
         done();
       });
   });
@@ -36,7 +36,7 @@ describe('proxies headers', function() {
       .expect(200)
       .end(function(err, res) {
         if (err) { return done(err); }
-        assert(res.body.headers['X-Powerererer']);
+        assert(res.body.headers['x-powerererer']);
         done();
       });
   });

@@ -121,7 +121,7 @@ describe('body encoding', function() {
         .get('/headers')
         .end(function(err, res) {
           if (err) { throw err; }
-          assert.equal(res.headers['Accept-Charset'], 'utf-16');
+          assert.equal(res.headers['accept-charset'], 'utf-16');
           done(err);
         });
     });

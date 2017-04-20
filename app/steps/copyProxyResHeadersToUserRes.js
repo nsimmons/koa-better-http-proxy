@@ -10,7 +10,7 @@ function copyProxyResHeadersToUserRes(container) {
       Object.keys(rsp.headers)
       .filter(function(item) { return item !== 'transfer-encoding'; })
       .forEach(function(item) {
-        ctx.response.header[item] = rsp.headers[item];
+        ctx.set(item, rsp.headers[item]);
       });
     }
 

@@ -19,7 +19,7 @@ describe('http verbs', function() {
       .get('/get')
       .end(function(err, res) {
         if (err) { return done(err); }
-        assert(/node-superagent/.test(res.headers['User-Agent']));
+        assert(/node-superagent/.test(res.body.headers['User-Agent']));
         assert.equal(res.body.url, 'http://httpbin.org/get');
         done(err);
       });
