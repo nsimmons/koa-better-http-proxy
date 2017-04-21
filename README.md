@@ -1,4 +1,4 @@
-# koa-better-http-proxy [![Build Status](https://travis-ci.org/nsimmons/koa-better-http-proxy.svg?branch=master)](https://travis-ci.org/nsimmons/koa-better-http-proxy)
+# koa-better-http-proxy [![Build Status](https://travis-ci.org/nsimmons/koa-better-http-proxy.svg?branch=master)](https://travis-ci.org/nsimmons/koa-better-http-proxy) [![Downloads](https://img.shields.io/npm/dm/koa-better-http-proxy.png?style=flat-square)](https://www.npmjs.com/package/koa-better-http-proxy)
 
 Koa middleware to proxy request to another host and pass response back. Based on [express-http-proxy](https://github.com/villadora/express-http-proxy).
 
