@@ -3,7 +3,7 @@ var Koa = require('koa');
 var agent = require('supertest').agent;
 var proxy = require('../');
 
-describe('decorateRequest', function() {
+describe('proxyReqOptDecorator', function() {
   'use strict';
 
   this.timeout(10000);

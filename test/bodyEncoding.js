@@ -45,7 +45,7 @@ describe('body encoding', function() {
           // This test is both broken and I think unnecessary.
           // Its broken because http.bin no longer supports /post, but this test assertion is based on the old
           // httpbin behavior.
-          // The assertion in the decorateRequest above verifies the test title.
+          // The assertion in the proxyReqOptDecorator above verifies the test title.
           //var response = new Buffer(res.body.attachment.data).toString('base64');
           //assert(response.indexOf(pngData.toString('base64')) >= 0, 'response should include original raw data');
           done(err);
@@ -77,7 +77,7 @@ describe('body encoding', function() {
             // This test is both broken and I think unnecessary.
             // Its broken because http.bin no longer supports /post, but this test assertion is based on the old
             // httpbin behavior.
-            // The assertion in the decorateRequest above verifies the test title.
+            // The assertion in the proxyReqOptDecorator above verifies the test title.
             // var response = new Buffer(res.body.attachment.data).toString('base64');
             // assert(response.indexOf(pngData.toString('base64')) >= 0, 'response should include original raw data');
             done(err);
@@ -103,7 +103,7 @@ describe('body encoding', function() {
             // This test is both broken and I think unnecessary.
             // Its broken because http.bin no longer supports /post, but this test assertion is based on the old
             // httpbin behavior.
-            // The assertion in the decorateRequest above verifies the test title.
+            // The assertion in the proxyReqOptDecorator above verifies the test title.
             //var response = new Buffer(res.body.attachment.data).toString('base64');
             //assert(response.indexOf(pngData.toString('base64')) >= 0, 'response should include original raw data');
             done(err);

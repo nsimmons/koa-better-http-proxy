@@ -7,8 +7,6 @@ var http = require('http');
 var proxy = require('../../');
 var proxyTarget = require('../../test/support/proxyTarget');
 
-var aliases = ['forwardPath', 'forwardPathAsync', 'proxyReqPathResolver'];
-
 describe('resolveProxyReqPath', function() {
   var server;
 
@@ -30,35 +28,33 @@ describe('resolveProxyReqPath', function() {
     server.close();
   });
 
-  aliases.forEach(function(alias) {
-    describe('when author uses option ' + alias, function() {
-      it('the proxy request path is the result of the function', function(done) {
-        var app = new Koa();
-        var opts = {};
-        opts[alias] = function() { return '/working'; };
-        app.use(proxy('localhost:12345', opts));
+  describe('when author uses option proxyReqPathResolver', function() {
+    it('the proxy request path is the result of the function', function(done) {
+      var app = new Koa();
+      var opts = {};
+      opts.proxyReqPathResolver = function() { return '/working'; };
+      app.use(proxy('localhost:12345', opts));
 
-        agent(app.callback())
-          .get('/failing')
-          .expect(200)
-          .end(done);
-      });
-
-      it('the ' + alias + ' method has access to request object', function(done) {
-        var app = new Koa();
-        var opts = {};
-        opts[alias] = function(ctx) {
-          assert.ok(ctx.req instanceof http.IncomingMessage);
-          return '/working';
-        };
-        app.use(proxy('localhost:12345', opts));
-
-        agent(app.callback())
-          .get('/foobar')
-          .expect(200)
-          .end(done);
-      });
-
+      agent(app.callback())
+        .get('/failing')
+        .expect(200)
+        .end(done);
     });
+
+    it('the proxyReqPathResolver method has access to request object', function(done) {
+      var app = new Koa();
+      var opts = {};
+      opts.proxyReqPathResolver = function(ctx) {
+        assert.ok(ctx.req instanceof http.IncomingMessage);
+        return '/working';
+      };
+      app.use(proxy('localhost:12345', opts));
+
+      agent(app.callback())
+        .get('/foobar')
+        .expect(200)
+        .end(done);
+    });
+
   });
 });
