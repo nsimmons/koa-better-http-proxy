@@ -15,8 +15,6 @@ describe('host can be a dynamic function', function() {
 
   app.use(proxy(function(ctx) {
     return 'localhost:' + ctx.url.replace('/proxy/', '');
-  }, {
-    memoizeHost: false
   }));
 
   firstProxyApp.use(function(ctx) {

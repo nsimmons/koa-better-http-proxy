@@ -27,6 +27,38 @@ If you wish to proxy only specific paths, you can use a router middleware to acc
 
 ### Options
 
+#### port
+
+The port to use for the proxied host.
+
+```js
+app.use(proxy('www.google.com', {
+  port: 443
+}));
+```
+
+#### headers
+
+Additional headers to send to the proxied host.
+
+```js
+app.use(proxy('www.google.com', {
+  headers: {
+    'X-Special-Header': 'true'
+  }
+}));
+```
+
+#### preserveReqSession
+
+Pass the session along to the proxied request
+
+```js
+app.use(proxy('www.google.com', {
+  preserveReqSession: true
+}));
+```
+
 #### proxyReqPathResolver (supports Promises)
 
 Provide a proxyReqPathResolver function if you'd like to
@@ -124,35 +156,6 @@ app.use(proxy('www.google.com', {
 }));
 ```
 
-#### memoizeHost
-
-Defaults to ```true```.
-
-When true, the ```host``` argument will be parsed on first request, and
-memoized for subsequent requests.
-
-When ```false```, ```host``` argument will be parsed on each request.
-
-E.g.,
-
-```js
-
-  function coinToss() { return Math.random() > .5 }
-  function getHost() { return coinToss() ? 'http://yahoo.com' : 'http://google.com' }
-
-  app.use(proxy(getHost, {
-    memoizeHost: false
-  }))
-```
-
-In this example, when ```memoizeHost:false```, the coinToss occurs on each
-request, and each request could get either value.
-
-Conversely, When ```memoizeHost:true```,  the coinToss would occur on the first
-request, and all additional requests would return the value resolved on the
-first request.
-
-
 #### proxyReqOptDecorator  (supports Promise form)
 
 You can mutate the request options before sending the proxyRequest.
@@ -186,13 +189,13 @@ app.use(proxy('www.google.com', {
 }));
 ```
 
-#### decorateProxyReqBody  (supports Promise form)
+#### proxyReqBodyDecorator  (supports Promise form)
 
 You can mutate the body content before sending the proxyRequest.
 
 ```js
 app.use(proxy('www.google.com', {
-  decorateProxyReqBody: function(bodyContent, ctx) {
+  proxyReqBodyDecorator: function(bodyContent, ctx) {
     return bodyContent.split('').reverse().join('');
   }
 }));
@@ -202,7 +205,7 @@ You can use a Promise for async style.
 
 ```js
 app.use(proxy('www.google.com', {
-  decorateProxyReqBody: function(proxyReq, ctx) {
+  proxyReqBodyDecorator: function(proxyReq, ctx) {
     return new Promise(function(resolve, reject) {
       http.get('http://dev/null', function (err, res) {
         if (err) { reject(err); }
