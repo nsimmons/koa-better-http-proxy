@@ -2,7 +2,7 @@
 
 Koa middleware to proxy request to another host and pass response back. Based on [express-http-proxy](https://github.com/villadora/express-http-proxy).
 
-<!--## Install
+## Install
 
 ```bash
 $ npm install koa-http-proxy --save
@@ -13,15 +13,17 @@ $ npm install koa-http-proxy --save
 proxy(host, options);
 ```
 
-To proxy URLS starting with '/proxy' to the host 'www.google.com':
+To proxy URLS to the host 'www.google.com':
 
 ```js
-var proxy = require('express-http-proxy');
+var proxy = require('koa-http-proxy');
+var Koa = require('koa');
 
-var app = require('express')();
-
-app.use('/proxy', proxy('www.google.com'));
+var app = new Koa();
+app.use(proxy('www.google.com'));
 ```
+
+If you wish to proxy only specific paths, you can use a router middleware to accomplish this. See [https://github.com/koajs/koa/wiki#routing-and-mounting](Koa routing middlewares).
 
 ### Options
 
@@ -32,9 +34,9 @@ operate on the path before issuing the proxy request.  Use a Promise for async
 operations.
 
 ```js
-app.use('/proxy', proxy('localhost:12345', {
-  proxyReqPathResolver: function(req) {
-    return require('url').parse(req.url).path;
+app.use(proxy('localhost:12345', {
+  proxyReqPathResolver: function(ctx) {
+    return require('url').parse(ctx.url).path;
   }
 }));
 ```
@@ -42,8 +44,8 @@ app.use('/proxy', proxy('localhost:12345', {
 Promise form
 
 ```js
-app.use('/proxy', proxy('localhost:12345', {
-  proxyReqPathResolver: function(req) {
+app.use(proxy('localhost:12345', {
+  proxyReqPathResolver: function(ctx) {
     return new Promise(function (resolve, reject) {
       setTimeout(function () {   // do asyncness
         resolve(fancyResults);
@@ -53,14 +55,6 @@ app.use('/proxy', proxy('localhost:12345', {
 }));
 ```
 
-#### forwardPath
-
-DEPRECATED.  See proxyReqPathResolver
-
-#### forwardPathAsync
-
-DEPRECATED. See proxyReqPathResolver
-
 #### filter
 
 The ```filter``` option can be used to limit what requests are proxied.  Return ```true``` to execute proxy.
@@ -68,14 +62,14 @@ The ```filter``` option can be used to limit what requests are proxied.  Return 
 For example, if you only want to proxy get request:
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
-  filter: function(req, res) {
-     return req.method == 'GET';
+app.use(proxy('www.google.com', {
+  filter: function(ctx) {
+     return ctx.method === 'GET';
   }
 }));
 ```
 
-#### userResDecorator (was: intercept) (supports Promise)
+#### userResDecorator (supports Promise)
 
 You can modify the proxy's response before sending it to the client.
 
@@ -83,7 +77,7 @@ You can modify the proxy's response before sending it to the client.
 The intent is that this be used to modify the proxy response data only.
 
 Note:
-The other arguments (proxyRes, userReq, userRes) are passed by reference, so
+The other arguments (proxyRes, ctx) are passed by reference, so
 you *can* currently exploit this to modify either response's headers, for
 instance, but this is not a reliable interface. I expect to close this
 exploit in a future release, while providing an additional hook for mutating
@@ -96,8 +90,8 @@ it before passing to your function, then zip it back up before piping it to the
 user response.  There is currently no way to short-circuit this behavior.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
-  userResDecorator: function(proxyRes, proxyResData, userReq, userRes) {
+app.use(proxy('www.google.com', {
+  userResDecorator: function(proxyRes, proxyResData, ctx) {
     data = JSON.parse(proxyResData.toString('utf8'));
     data.newProperty = 'exciting data';
     return JSON.stringify(data);
@@ -125,7 +119,7 @@ a `413 Request Entity Too Large`  error will be returned. See [bytes.js](https:/
 a list of supported formats.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
+app.use(proxy('www.google.com', {
   limit: '5mb'
 }));
 ```
@@ -159,10 +153,6 @@ request, and all additional requests would return the value resolved on the
 first request.
 
 
-#### decorateRequest
-
-REMOVED:  See ```proxyReqOptDecorator``` and ```decorateProxyReqBody```.
-
 #### proxyReqOptDecorator  (supports Promise form)
 
 You can mutate the request options before sending the proxyRequest.
@@ -170,8 +160,8 @@ proxyReqOpt represents the options argument passed to the (http|https).request
 module.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
-  proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+app.use(proxy('www.google.com', {
+  proxyReqOptDecorator: function(proxyReqOpts, ctx) {
     // you can update headers
     proxyReqOpts.headers['content-type'] = 'text/html';
     // you can change the method
@@ -186,8 +176,8 @@ app.use('/proxy', proxy('www.google.com', {
 You can use a Promise for async style.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
-  proxyReqOptDecorator: function(proxyReqOpts, srcReq) {
+app.use(proxy('www.google.com', {
+  proxyReqOptDecorator: function(proxyReqOpts, ctx) {
     return new Promise(function(resolve, reject) {
       proxyReqOpts.headers['content-type'] = 'text/html';
       resolve(proxyReqOpts);
@@ -201,8 +191,8 @@ app.use('/proxy', proxy('www.google.com', {
 You can mutate the body content before sending the proxyRequest.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
-  decorateProxyReqBody: function(bodyContent, srcReq) {
+app.use(proxy('www.google.com', {
+  decorateProxyReqBody: function(bodyContent, ctx) {
     return bodyContent.split('').reverse().join('');
   }
 }));
@@ -211,8 +201,8 @@ app.use('/proxy', proxy('www.google.com', {
 You can use a Promise for async style.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
-  decorateProxyReqBody: function(proxyReq, srcReq) {
+app.use(proxy('www.google.com', {
+  decorateProxyReqBody: function(proxyReq, ctx) {
     return new Promise(function(resolve, reject) {
       http.get('http://dev/null', function (err, res) {
         if (err) { reject(err); }
@@ -230,7 +220,7 @@ request.  If you'd like to force the proxy request to be https, use this
 option.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
+app.use(proxy('www.google.com', {
   https: true
 }));
 ```
@@ -240,7 +230,7 @@ app.use('/proxy', proxy('www.google.com', {
 You can copy the host HTTP header to the proxied express server using the `preserveHostHdr` option.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
+app.use(proxy('www.google.com', {
   preserveHostHdr: true
 }));
 ```
@@ -258,7 +248,7 @@ When false, no action will be taken on the body and accordingly ```req.body``` w
 Note that setting this to false overrides ```reqAsBuffer``` and ```reqBodyEncoding``` below.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
+app.use(proxy('www.google.com', {
   parseReqBody: false
 }));
 ```
@@ -277,7 +267,7 @@ the value of ```reqBodyEnconding``` is used as the encoding when coercing string
 Ignored if ```parseReqBody``` is set to false.
 
 ```js
-app.use('/proxy', proxy('www.google.com', {
+app.use(proxy('www.google.com', {
   reqAsBuffer: true
 }));
 ```
@@ -289,12 +279,12 @@ Encoding used to decode request body. Defaults to ```utf-8```.
 Use ```null``` to preserve as Buffer when proxied request body is a Buffer. (e.g image upload)
 Accept any values supported by [raw-body](https://www.npmjs.com/package/raw-body#readme).
 
-The same encoding is used in the intercept method.
+The same encoding is used in the userResDecorator method.
 
 Ignored if ```parseReqBody``` is set to false.
 
 ```js
-app.use('/post', proxy('httpbin.org', {
+app.use(proxy('httpbin.org', {
   reqBodyEncoding: null
 }));
 ```
@@ -307,7 +297,7 @@ Use timeout option to impose a specific timeout.
 Timed-out requests will respond with 504 status code and a X-Timeout-Reason header.
 
 ```js
-app.use('/', proxy('httpbin.org', {
+app.use(proxy('httpbin.org', {
   timeout: 2000  // in milliseconds, two seconds
 }));
-```-->
+```
