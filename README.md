@@ -1,11 +1,11 @@
-# koa-http-proxy [![Build Status](https://travis-ci.org/nsimmons/koa-http-proxy.svg?branch=master)](https://travis-ci.org/nsimmons/koa-http-proxy)
+# koa-better-http-proxy [![Build Status](https://travis-ci.org/nsimmons/koa-better-http-proxy.svg?branch=master)](https://travis-ci.org/nsimmons/koa-better-http-proxy)
 
 Koa middleware to proxy request to another host and pass response back. Based on [express-http-proxy](https://github.com/villadora/express-http-proxy).
 
 ## Install
 
 ```bash
-$ npm install koa-http-proxy --save
+$ npm install koa-better-http-proxy --save
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ proxy(host, options);
 To proxy URLS to the host 'www.google.com':
 
 ```js
-var proxy = require('koa-http-proxy');
+var proxy = require('koa-better-http-proxy');
 var Koa = require('koa');
 
 var app = new Koa();

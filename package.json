@@ -1,5 +1,5 @@
 {
-  "name": "koa-http-proxy",
+  "name": "koa-better-http-proxy",
   "version": "0.1.0",
   "description": "http proxy middleware for koa",
   "engines": {
@@ -16,10 +16,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/nsimmons/koa-http-proxy.git"
+    "url": "git://github.com/nsimmons/koa-better-http-proxy.git"
   },
   "keywords": [
-    "koa-http-proxy"
+    "koa-better-http-proxy"
   ],
   "author": {
     "name": "nsimmons",
@@ -27,7 +27,7 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nsimmons/koa-http-proxy/issues"
+    "url": "https://github.com/nsimmons/koa-better-http-proxy/issues"
   },
   "devDependencies": {
     "body-parser": "^1.17.1",

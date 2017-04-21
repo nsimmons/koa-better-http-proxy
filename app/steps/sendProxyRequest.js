@@ -33,7 +33,7 @@ function sendProxyRequest(Container) {
     proxyReq.on('error', function(err) {
     // reject(error);
       if (err.code === 'ECONNRESET') {
-        ctx.set('X-Timout-Reason', 'koa-http-proxy timed out your request after ' + options.timeout + 'ms.');
+        ctx.set('X-Timout-Reason', 'koa-better-http-proxy timed out your request after ' + options.timeout + 'ms.');
         ctx.set('Content-Type', 'text/plain');
         ctx.status = 504;
         resolve(Container);
