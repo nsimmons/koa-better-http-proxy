@@ -1,9 +1,7 @@
 import * as koa from 'koa';
 import * as http from 'http';
 
-declare function KoaHttpProxy(host: string, options: IOptions): koa.Middleware;
-
-interface IOptions {
+export interface IOptions {
   headers?: { [key: string]: any},
   https?: boolean,
   limit?: string,
@@ -21,7 +19,7 @@ interface IOptions {
   userResDecorator?(proxyRes: http.IncomingMessage, proxyResData: string | Buffer, ctx: koa.Context): string | Buffer | Promise<string> | Promise<Buffer>,
 }
 
-interface IRequestOption {
+export interface IRequestOption {
   hostname: string,
   port: number,
   headers: { [key: string]: any},
@@ -31,6 +29,5 @@ interface IRequestOption {
   params: any,
 }
 
-declare module 'koa-better-http-proxy' {
-  export = KoaHttpProxy;
-}
+export as namespace KoaHttpProxy;
+export default function KoaHttpProxy(host: string, options: IOptions): koa.Middleware;
