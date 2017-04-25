@@ -18,6 +18,7 @@
     "type": "git",
     "url": "git://github.com/nsimmons/koa-better-http-proxy.git"
   },
+  "types": "types.d.ts",
   "keywords": [
     "koa-better-http-proxy"
   ],
