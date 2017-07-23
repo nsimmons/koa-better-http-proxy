@@ -21,6 +21,7 @@ describe('body encoding', function() {
                '0d0a2db4000000004' +
                '9454e44ae426082';
   var pngData = new Buffer(pngHex, 'hex');
+  var largePngData = new Buffer(pngHex.repeat(100000), 'hex'); // 6.7MB
 
   it('allow raw data', function(done) {
     var filename = os.tmpdir() + '/koa-better-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
@@ -54,6 +55,49 @@ describe('body encoding', function() {
 
   });
 
+  // In this case, the package `raw-body` will print error stack which does not mater.
+  it('should get 413 by posting file which is larger than 1mb without setting limit', function(done) {
+    var filename = os.tmpdir() + '/koa-better-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
+    var app = new Koa();
+    app.use(proxy('localhost:8109', {
+    }));
+    fs.writeFile(filename, largePngData, function(err) {
+      if (err) { throw err; }
+      agent(app.callback())
+        .post('/post')
+        .attach('image', filename)
+        .expect(413)
+        .end(function(err) {
+          fs.unlink(filename);
+          assert(err === null);
+          if (err) { return done(err); }
+          done();
+        });
+    });
+  });
+
+  it('should not fail on large limit', function(done) {
+    var filename = os.tmpdir() + '/koa-better-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
+    var app = new Koa();
+    app.use(proxy('localhost:8109', {
+      // This case `parseReqBody` should not be set to false,
+      limit: '20gb',
+    }));
+    fs.writeFile(filename, largePngData, function(err) {
+      if (err) { throw err; }
+      agent(app.callback())
+        .post('/post')
+        .attach('image', filename)
+        .expect(200)
+        .end(function(err) {
+          fs.unlink(filename);
+          assert(err === null);
+          if (err) { return done(err); }
+          done();
+        });
+    });
+  });
+
   describe('when user sets parseReqBody', function() {
 
     it('should not parse body', function(done) {
@@ -85,6 +129,9 @@ describe('body encoding', function() {
       });
     });
 
+    // This test is unnecessary, because when `parseReqBody` is set to `false`,
+    // bodyContent will not be parsed, thus the `limit` options will not be used.
+    // see app/steps/buildProxyReq.js#L10
     it('should not fail on large limit', function(done) {
       var filename = os.tmpdir() + '/koa-better-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
       var app = new Koa();
