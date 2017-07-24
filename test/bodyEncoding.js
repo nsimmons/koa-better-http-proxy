@@ -129,34 +129,6 @@ describe('body encoding', function() {
       });
     });
 
-    // This test is unnecessary, because when `parseReqBody` is set to `false`,
-    // bodyContent will not be parsed, thus the `limit` options will not be used.
-    // see app/steps/buildProxyReq.js#L10
-    it('should not fail on large limit', function(done) {
-      var filename = os.tmpdir() + '/koa-better-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
-      var app = new Koa();
-      app.use(proxy('localhost:8109', {
-        parseReqBody: false,
-        limit: '20gb',
-      }));
-      fs.writeFile(filename, pngData, function(err) {
-        if (err) { throw err; }
-        agent(app.callback())
-          .post('/post')
-          .attach('image', filename)
-          .end(function(err) {
-            fs.unlink(filename);
-            assert(err === null);
-            // This test is both broken and I think unnecessary.
-            // Its broken because http.bin no longer supports /post, but this test assertion is based on the old
-            // httpbin behavior.
-            // The assertion in the proxyReqOptDecorator above verifies the test title.
-            //var response = new Buffer(res.body.attachment.data).toString('base64');
-            //assert(response.indexOf(pngData.toString('base64')) >= 0, 'response should include original raw data');
-            done(err);
-          });
-      });
-    });
   });
 
   describe('when user sets reqBodyEncoding', function() {
