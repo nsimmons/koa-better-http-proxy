@@ -10,15 +10,13 @@ function buildProxyReq(Container) {
   var parseBody = (!options.parseReqBody) ? Promise.resolve(null) : requestOptions.bodyContent(ctx, options);
   var createReqOptions = requestOptions.create(ctx, options, host);
 
-  return new Promise(function(resolve) {
-    Promise
+  return Promise
     .all([parseBody, createReqOptions])
     .then(function(responseArray) {
       Container.proxy.bodyContent = responseArray[0];
       Container.proxy.reqBuilder = responseArray[1];
-      resolve(Container);
+      return Container;
     });
-  });
 }
 
 module.exports = buildProxyReq;
