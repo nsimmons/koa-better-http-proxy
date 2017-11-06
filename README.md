@@ -23,7 +23,7 @@ var app = new Koa();
 app.use(proxy('www.google.com'));
 ```
 
-If you wish to proxy only specific paths, you can use a router middleware to accomplish this. See [https://github.com/koajs/koa/wiki#routing-and-mounting](Koa routing middlewares).
+If you wish to proxy only specific paths, you can use a router middleware to accomplish this. See [Koa routing middlewares](https://github.com/koajs/koa/wiki#routing-and-mounting).
 
 ### Options
 
