@@ -4,10 +4,10 @@ function decorateProxyResHeaders(container) {
   var ctx = container.user.ctx;
   var rsp = container.proxy.res;
   var modifierFn = container.options.userResHeadersDecorator;
-  if (!modifierFn || ctx.status !== 504) {
+  if (!modifierFn || ctx.status === 504) {
     return Promise.resolve(container);
   }
-  Promise.all(
+  return Promise.all(
     Object.keys(rsp.headers)
     .map(function (header) {
       return modifierFn(header, rsp.headers[header]).then(function (value) {
@@ -19,10 +19,10 @@ function decorateProxyResHeaders(container) {
     })
   )
   .then(function (modHeaders) {
-    values.forEach(function (modHeaders) {
+    modHeaders.forEach(function (modHeaders) {
         ctx.set(modHeaders.headerName, modHeaders.newValue);
     });
-    resolve(container);
+    return container;
   })
 }
 
