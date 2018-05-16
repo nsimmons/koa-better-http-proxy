@@ -115,6 +115,10 @@ instance, but this is not a reliable interface. I expect to close this
 exploit in a future release, while providing an additional hook for mutating
 the userRes before sending.
 
+#### userResHeadersDecorator (supports Promise)
+
+You can modify the proxy's headers before sending it to the client.
+
 ##### gzip responses
 
 If your proxy response is gzipped, this program will automatically unzip

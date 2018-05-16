@@ -8,6 +8,7 @@ var copyProxyResHeadersToUserRes = require('./app/steps/copyProxyResHeadersToUse
 var decorateProxyReqBody         = require('./app/steps/decorateProxyReqBody');
 var decorateProxyReqOpts         = require('./app/steps/decorateProxyReqOpts');
 var decorateUserRes              = require('./app/steps/decorateUserRes');
+var decorateUserResHeaders       = require('./app/steps/decorateUserResHeaders');
 var prepareProxyReq              = require('./app/steps/prepareProxyReq');
 var resolveProxyHost             = require('./app/steps/resolveProxyHost');
 var resolveProxyReqPath          = require('./app/steps/resolveProxyReqPath');
@@ -33,6 +34,7 @@ module.exports = function proxy(host, userOptions) {
       .then(prepareProxyReq)
       .then(sendProxyRequest)
       .then(copyProxyResHeadersToUserRes)
+      .then(decorateUserResHeaders)
       .then(decorateUserRes)
       .then(sendUserRes)
       .then(next);
