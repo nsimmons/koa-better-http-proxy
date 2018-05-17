@@ -14,7 +14,7 @@ function decorateProxyResHeaders(container) {
         return {
           headerName: header,
           newValue: value
-        }
+        };
       });
     })
   )
@@ -23,7 +23,7 @@ function decorateProxyResHeaders(container) {
         ctx.set(modHeaders.headerName, modHeaders.newValue);
     });
     return container;
-  })
+  });
 }
 
 module.exports = decorateProxyResHeaders;
