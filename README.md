@@ -49,6 +49,19 @@ app.use(proxy('www.google.com', {
 }));
 ```
 
+
+#### strippedHeaders
+
+Headers to remove from proxy response.
+
+```js
+app.use(proxy('www.google.com', {
+  strippedHeaders: [
+    'set-cookie'
+  ]
+}));
+```
+
 #### preserveReqSession
 
 Pass the session along to the proxied request

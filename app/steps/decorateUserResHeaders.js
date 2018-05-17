@@ -10,7 +10,7 @@ function decorateProxyResHeaders(container) {
   return Promise.all(
     Object.keys(rsp.headers)
     .map(function (header) {
-      return modifierFn(header, rsp.headers[header]).then(function (value) {
+      return Promise.resolve(modifierFn(header, rsp.headers[header])).then(function (value) {
         return {
           headerName: header,
           newValue: value

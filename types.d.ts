@@ -6,6 +6,7 @@ declare function koaHttpProxy(host: string, options: koaHttpProxy.IOptions): koa
 declare namespace koaHttpProxy {
   export interface IOptions {
     headers?: { [key: string]: any },
+    strippedHeaders?: [string],
     https?: boolean,
     limit?: string,
     parseReqBody?: boolean,
@@ -20,7 +21,7 @@ declare namespace koaHttpProxy {
     proxyReqOptDecorator?(proxyReqOpts: IRequestOption, ctx: koa.Context): IRequestOption | Promise<IRequestOption>,
     proxyReqPathResolver?(ctx: koa.Context): string | Promise<string>,
     userResDecorator?(proxyRes: http.IncomingMessage, proxyResData: string | Buffer, ctx: koa.Context): string | Buffer | Promise<string> | Promise<Buffer>,
-    userResHeadersDecorator?(headerName: string, headerValue: string): Promise<string>,
+    userResHeadersDecorator?(headerName: string, headerValue: string): Promise<string> | string,
   }
 
   export interface IRequestOption {
