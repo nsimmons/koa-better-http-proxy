@@ -9,8 +9,8 @@ function decorateProxyResHeaders(container) {
   }
   return Promise.all(
     Object.keys(rsp.headers)
-    .map(function (header) {
-      return Promise.resolve(modifierFn(header, rsp.headers[header])).then(function (value) {
+    .map(function(header) {
+      return Promise.resolve(modifierFn(header, rsp.headers[header])).then(function(value) {
         return {
           headerName: header,
           newValue: value
@@ -18,8 +18,8 @@ function decorateProxyResHeaders(container) {
       });
     })
   )
-  .then(function (modHeaders) {
-    modHeaders.forEach(function (modHeaders) {
+  .then(function(modHeaders) {
+    modHeaders.forEach(function(modHeaders) {
         ctx.set(modHeaders.headerName, modHeaders.newValue);
     });
     return container;
