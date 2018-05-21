@@ -21,7 +21,7 @@ declare namespace koaHttpProxy {
     proxyReqOptDecorator?(proxyReqOpts: IRequestOption, ctx: koa.Context): IRequestOption | Promise<IRequestOption>,
     proxyReqPathResolver?(ctx: koa.Context): string | Promise<string>,
     userResDecorator?(proxyRes: http.IncomingMessage, proxyResData: string | Buffer, ctx: koa.Context): string | Buffer | Promise<string> | Promise<Buffer>,
-    userResHeadersDecorator?(headerName: string, headerValue: string): Promise<string> | string,
+    userResHeadersDecorator?(headers: {[key: string]: string}): Promise<{[key: string]: string}> | {[key: string]: string},
   }
 
   export interface IRequestOption {
