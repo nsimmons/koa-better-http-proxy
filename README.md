@@ -50,6 +50,19 @@ app.use(proxy('www.google.com', {
 }));
 ```
 
+
+#### strippedHeaders
+
+Headers to remove from proxy response.
+
+```js
+app.use(proxy('www.google.com', {
+  strippedHeaders: [
+    'set-cookie'
+  ]
+}));
+```
+
 #### preserveReqSession
 
 Pass the session along to the proxied request
@@ -115,6 +128,10 @@ you *can* currently exploit this to modify either response's headers, for
 instance, but this is not a reliable interface. I expect to close this
 exploit in a future release, while providing an additional hook for mutating
 the userRes before sending.
+
+#### userResHeadersDecorator (supports Promise)
+
+You can modify the proxy's headers before sending it to the client.
 
 ##### gzip responses
 
