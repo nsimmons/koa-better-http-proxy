@@ -292,11 +292,24 @@ app.use(proxy('httpbin.org', {
 }));
 ```
 
+#### connectTimeout
+
+By default, node does not express a timeout on connections.
+Use connectTimeout option to impose a specific timeout on the inital connection. (`connect` for http requests and `secureConnect` for https)
+This is useful if there are dns, network issues, or if you are uncertain if the destination is reachable.
+Timed-out requests will respond with 504 status code and a X-Timeout-Reason header.
+
+```js
+app.use(proxy('httpbin.org', {
+  connectTimeout: 2000  // in milliseconds, two seconds
+}));
+```
+
 
 #### timeout
 
 By default, node does not express a timeout on connections.
-Use timeout option to impose a specific timeout.
+Use timeout option to impose a specific timeout. This includes the time taken to make the connection and can be used with or without `connectTimeout`.
 Timed-out requests will respond with 504 status code and a X-Timeout-Reason header.
 
 ```js

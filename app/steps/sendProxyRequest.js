@@ -20,12 +20,34 @@ function sendProxyRequest(Container) {
       });
       rsp.on('error', reject);
     });
+    var abortRequest = function() {
+      proxyReq.abort();
+    };
+    var timeoutDuration = null;
 
     proxyReq.on('socket', function(socket) {
-      if (options.timeout) {
-        socket.setTimeout(options.timeout, function() {
-          proxyReq.abort();
+      var isSecure = Container.proxy.isSecure;
+      var timeout = options.timeout;
+      var connectTimeout = options.connectTimeout;
+      // "secureConnect" includes time taken for "lookup" (dns), "connect" and "ready" events, as well as tls handshake.
+      var eventListener = isSecure ? 'secureConnect' : 'connect';
+
+      if (connectTimeout) {
+        timeoutDuration = connectTimeout;
+        socket.setTimeout(connectTimeout, abortRequest);
+
+        socket.on(eventListener, function() {
+          if (timeout) {
+            timeoutDuration = timeout;
+            socket.setTimeout(timeout, abortRequest);
+          } else {
+            // 0 to reset to the default of no timeout for the rest of the request
+            socket.setTimeout(0);
+          }
         });
+      } else if (timeout) {
+        timeoutDuration = timeout;
+        socket.setTimeout(timeout, abortRequest);
       }
     });
 
@@ -33,7 +55,7 @@ function sendProxyRequest(Container) {
     proxyReq.on('error', function(err) {
     // reject(error);
       if (err.code === 'ECONNRESET') {
-        ctx.set('X-Timout-Reason', 'koa-better-http-proxy timed out your request after ' + options.timeout + 'ms.');
+        ctx.set('X-Timout-Reason', 'koa-better-http-proxy timed out your request after ' + timeoutDuration + 'ms.');
         ctx.set('Content-Type', 'text/plain');
         ctx.status = 504;
         resolve(Container);

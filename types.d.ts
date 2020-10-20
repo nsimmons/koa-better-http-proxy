@@ -14,6 +14,7 @@ declare namespace koaHttpProxy {
     preserveReqSession?: boolean,
     reqAsBuffer?: boolean,
     reqBodyEncoding?: string | null,
+    connectTimeout?: number,
     timeout?: number,
     filter?(ctx: koa.Context): boolean,
     proxyReqBodyDecorator?(bodyContent: string, ctx: koa.Context): string | Promise<string>,
