@@ -5,6 +5,7 @@ declare function koaHttpProxy(host: string, options: koaHttpProxy.IOptions): koa
 
 declare namespace koaHttpProxy {
   export interface IOptions {
+    agent?: Agent,
     headers?: { [key: string]: any },
     strippedHeaders?: [string],
     https?: boolean,
