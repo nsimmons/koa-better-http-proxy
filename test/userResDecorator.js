@@ -23,7 +23,7 @@ function proxyTarget(port) {
   return other.listen(port);
 }
 
-describe.only('userResDecorator', function() {
+describe('userResDecorator', function() {
   var other;
 
   beforeEach(function() {
