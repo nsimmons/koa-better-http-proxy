@@ -28,6 +28,17 @@ If you wish to proxy only specific paths, you can use a router middleware to acc
 
 ### Options
 
+#### agent
+
+Use a custom `http.Agent` for proxy requests.
+
+```js
+var agent = new http.Agent(options);
+app.use(proxy('www.google.com', {
+  agent: agent,
+}));
+```
+
 #### port
 
 The port to use for the proxied host.
