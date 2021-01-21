@@ -20,8 +20,8 @@ describe('body encoding', function() {
                'c6300010000050001' +
                '0d0a2db4000000004' +
                '9454e44ae426082';
-  var pngData = new Buffer(pngHex, 'hex');
-  var largePngData = new Buffer(pngHex.repeat(100000), 'hex'); // 6.7MB
+  var pngData = Buffer.from(pngHex, 'hex');
+  var largePngData = Buffer.from(pngHex.repeat(100000), 'hex'); // 6.7MB
 
   it('allow raw data', function(done) {
     var filename = os.tmpdir() + '/koa-better-http-proxy-test-' + (new Date()).getTime() + '-png-transparent.png';
@@ -30,7 +30,7 @@ describe('body encoding', function() {
     app.use(proxy('localhost:8109', {
       reqBodyEncoding: null,
       proxyReqBodyDecorator: function(bodyContent) {
-        assert((new Buffer(bodyContent).toString('hex')).indexOf(pngData.toString('hex')) >= 0,
+        assert((Buffer.from(bodyContent).toString('hex')).indexOf(pngData.toString('hex')) >= 0,
           'body should contain same data');
         return bodyContent;
       }
@@ -42,12 +42,12 @@ describe('body encoding', function() {
         .post('/post')
         .attach('image', filename)
         .end(function(err) {
-          fs.unlink(filename);
+          fs.unlink(filename, function() {});
           // This test is both broken and I think unnecessary.
           // Its broken because http.bin no longer supports /post, but this test assertion is based on the old
           // httpbin behavior.
           // The assertion in the proxyReqOptDecorator above verifies the test title.
-          //var response = new Buffer(res.body.attachment.data).toString('base64');
+          //var response = Buffer.from(res.body.attachment.data).toString('base64');
           //assert(response.indexOf(pngData.toString('base64')) >= 0, 'response should include original raw data');
           done(err);
         });
@@ -68,7 +68,7 @@ describe('body encoding', function() {
         .attach('image', filename)
         .expect(413)
         .end(function(err) {
-          fs.unlink(filename);
+          fs.unlink(filename, function() {});
           assert(err === null);
           if (err) { return done(err); }
           done();
@@ -90,7 +90,7 @@ describe('body encoding', function() {
         .attach('image', filename)
         .expect(200)
         .end(function(err) {
-          fs.unlink(filename);
+          fs.unlink(filename, function() {});
           assert(err === null);
           if (err) { return done(err); }
           done();
@@ -117,7 +117,7 @@ describe('body encoding', function() {
           .post('/post')
           .attach('image', filename)
           .end(function(err) {
-            fs.unlink(filename);
+            fs.unlink(filename, function() {});
             // This test is both broken and I think unnecessary.
             // Its broken because http.bin no longer supports /post, but this test assertion is based on the old
             // httpbin behavior.
