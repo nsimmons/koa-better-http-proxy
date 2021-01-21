@@ -1,9 +1,9 @@
 {
   "name": "koa-better-http-proxy",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "http proxy middleware for koa",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=10.0.0"
   },
   "engineStrict": true,
   "main": "index.js",
