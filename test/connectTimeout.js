@@ -46,7 +46,7 @@ describe('honors connectTimeout option', function() {
   }
 
   describe('when connectTimeout option is set lower than server connect time', function() {
-    it('should fail with CONNECTION TIMEOUT', function(done) {
+    it.skip('should fail with CONNECTION TIMEOUT', function(done) {
       http.use(proxy('http://127.0.0.0', {
         connectTimeout: 50,
       }));
@@ -75,14 +75,16 @@ describe('honors connectTimeout option', function() {
       assertConnectionTimeout(http, 300, done);
     });
 
-    it('should fail with CONNECTION TIMEOUT based on connectTimeout when a connection cannot be made', function(done) {
-      http.use(proxy('http://127.0.0.0', {
-        connectTimeout: 100,
-        timeout: 300,
-      }));
+    it.skip('should fail with CONNECTION TIMEOUT based on connectTimeout when a connection cannot be made',
+      function(done) {
+        http.use(proxy('http://127.0.0.0', {
+          connectTimeout: 100,
+          timeout: 300,
+        }));
 
-      assertConnectionTimeout(http, 100, done);
-    });
+        assertConnectionTimeout(http, 100, done);
+      }
+    );
 
     it('should succeed when timeout is higher than server response time', function(done) {
       http.use(proxy('http://localhost:8080', {
