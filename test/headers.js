@@ -18,6 +18,27 @@ describe('proxies headers', function() {
     }));
   });
 
+  it('does not include connection header by default', function(done) {
+    var app = new Koa();
+    app.use(proxy('httpbin.org', {
+      proxyReqOptDecorator: function(reqOpts, ctx) {
+        try {
+          assert(!reqOpts.headers.connection);
+        } catch (err) {
+          done(err);
+        }
+        return ctx;
+      }
+    }));
+
+    agent(app.callback())
+      .get('/user-agent')
+      .end(function(err) {
+        if (err) { return done(err); }
+        done();
+      });
+  });
+
   it('passed as options', function(done) {
     agent(http.callback())
       .get('/headers')
