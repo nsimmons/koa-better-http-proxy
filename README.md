@@ -191,6 +191,8 @@ You can mutate the request options before sending the proxyRequest.
 proxyReqOpt represents the options argument passed to the (http|https).request
 module.
 
+NOTE:  req.path cannot be changed via this method;  use ```proxyReqPathResolver``` instead.
+
 ```js
 app.use(proxy('www.google.com', {
   proxyReqOptDecorator: function(proxyReqOpts, ctx) {
@@ -198,8 +200,6 @@ app.use(proxy('www.google.com', {
     proxyReqOpts.headers['content-type'] = 'text/html';
     // you can change the method
     proxyReqOpts.method = 'GET';
-    // you could change the path
-    proxyReqOpts.path = 'http://dev/null'
     return proxyReqOpts;
   }
 }));
