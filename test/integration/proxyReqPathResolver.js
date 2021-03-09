@@ -28,6 +28,19 @@ describe('resolveProxyReqPath', function() {
     server.close();
   });
 
+  it('does not pollute global proxy headers with individual request headers', function(done) {
+    var app = new Koa();
+    var opts = {headers: {}};
+    app.use(proxy('localhost:12345', opts));
+
+    agent(app.callback())
+      .get('/working')
+      .end(() => {
+        assert.deepStrictEqual(opts.headers, {});
+        done();
+      })
+  });
+
   describe('when author uses option proxyReqPathResolver', function() {
     it('the proxy request path is the result of the function', function(done) {
       var app = new Koa();
