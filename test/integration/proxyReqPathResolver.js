@@ -35,10 +35,10 @@ describe('resolveProxyReqPath', function() {
 
     agent(app.callback())
       .get('/working')
-      .end(() => {
+      .end(function() {
         assert.deepStrictEqual(opts.headers, {});
         done();
-      })
+      });
   });
 
   describe('when author uses option proxyReqPathResolver', function() {
