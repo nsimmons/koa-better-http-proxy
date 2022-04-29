@@ -7,7 +7,7 @@ declare namespace koaHttpProxy {
   export interface IOptions {
     agent?: http.Agent,
     headers?: { [key: string]: any },
-    strippedHeaders?: [string],
+    strippedHeaders?: string[],
     https?: boolean,
     limit?: string,
     parseReqBody?: boolean,
