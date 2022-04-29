@@ -9,7 +9,15 @@ function isResGzipped(res) {
 
 function zipOrUnzip(method) {
   return function(rspData, res) {
-    return (isResGzipped(res)) ? zlib[method](rspData) : rspData;
+    // Be less strict when decoding compressed responses, since sometimes
+    // servers send slightly invalid responses that are still accepted
+    // by common browsers.
+    // Always using Z_SYNC_FLUSH is what cURL does.
+    var zlibOptions = {
+        flush: zlib.Z_SYNC_FLUSH,
+        finishFlush: zlib.Z_SYNC_FLUSH
+    };
+    return (isResGzipped(res)) ? zlib[method](rspData, zlibOptions) : rspData;
   };
 }
 
