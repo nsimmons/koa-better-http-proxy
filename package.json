@@ -39,7 +39,7 @@
     "jshint": "^2.9.4",
     "koa": "^2.2.0",
     "mocha": "^2.1.0",
-    "supertest": "^1.2.0"
+    "supertest": "^6.3.3"
   },
   "dependencies": {
     "es6-promise": "^3.3.1",
