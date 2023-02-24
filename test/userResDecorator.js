@@ -18,6 +18,9 @@ function proxyTarget(port) {
     ctx.status = 200;
     ctx.set('x-wombat-alliance', 'mammels');
     ctx.set('x-custom-header', 'something');
+    if (ctx.headers['content-encoding']) {
+      ctx.set('content-encoding', ctx.headers['content-encoding']);
+    }
     ctx.body = 'Success';
   });
   return other.listen(port);
@@ -48,6 +51,26 @@ describe('userResDecorator', function() {
     }));
 
     agent(app.callback()).get('/').end(done);
+  });
+
+  it('properly handles an empty gzipped response body from proxy', function(done) {
+    var app = new Koa();
+    app.use(proxy('http://localhost', {
+      port: 8080,
+      headers: {
+        'content-encoding': 'gzip'
+      },
+      userResDecorator: function(proxyRes, proxyResData) {
+        assert(proxyRes.connection);
+        assert(proxyRes.socket);
+        assert(proxyRes.headers);
+        assert(proxyRes.headers['content-encoding'] === 'gzip');
+        assert(proxyResData.byteLength === 0);
+        return proxyResData;
+      }
+    }));
+
+    agent(app.callback()).head('/').end(done);
   });
 
   it('works with promises', function(done) {
