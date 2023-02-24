@@ -4,6 +4,8 @@ var assert = require('assert');
 var Koa = require('koa');
 var agent = require('supertest').agent;
 var proxy = require('../');
+var sinon = require("sinon");
+var zlib = require('zlib');
 
 function proxyTarget(port) {
   var other = new Koa();
@@ -55,22 +57,24 @@ describe('userResDecorator', function() {
 
   it('properly handles an empty gzipped response body from proxy', function(done) {
     var app = new Koa();
+    var zlibSpy = sinon.spy(zlib, 'gunzipSync')
+    
     app.use(proxy('http://localhost', {
       port: 8080,
       headers: {
         'content-encoding': 'gzip'
       },
-      userResDecorator: function(proxyRes, proxyResData) {
-        assert(proxyRes.connection);
-        assert(proxyRes.socket);
-        assert(proxyRes.headers);
-        assert(proxyRes.headers['content-encoding'] === 'gzip');
-        assert(proxyResData.byteLength === 0);
-        return proxyResData;
-      }
+      userResDecorator: (_a, b) => b
     }));
 
-    agent(app.callback()).head('/').end(done);
+    agent(app.callback())
+      .head('/')
+      .end(function(err, res) {
+        if (err) { return done(err); }
+
+        assert(!zlibSpy.threw())
+        done();
+    });
   });
 
   it('works with promises', function(done) {

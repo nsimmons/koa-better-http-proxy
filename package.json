@@ -39,6 +39,7 @@
     "jshint": "^2.9.4",
     "koa": "^2.2.0",
     "mocha": "^2.1.0",
+    "sinon": "^15.0.1",
     "supertest": "^1.2.0"
   },
   "dependencies": {
