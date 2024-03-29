@@ -1,7 +1,7 @@
 import * as koa from 'koa';
 import * as http from 'http';
 
-declare function koaHttpProxy(host: string, options: koaHttpProxy.IOptions): koa.Middleware;
+declare function koaHttpProxy(host: string | ((ctx: koa.Context) => string), options: koaHttpProxy.IOptions): koa.Middleware;
 
 declare namespace koaHttpProxy {
   export interface IOptions {
